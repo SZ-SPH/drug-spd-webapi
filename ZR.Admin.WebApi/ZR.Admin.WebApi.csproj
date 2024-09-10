@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<UserSecretsId>ab105cb4-b03c-419a-bd44-303b90114268</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;1591,8603,8602,8604,8600,8618</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Topsdk\Topsdk.csproj" />
+		<ProjectReference Include="..\ZR.CodeGenerator\ZR.CodeGenerator.csproj" />
+		<ProjectReference Include="..\ZR.Service\ZR.Service.csproj" />
+		<ProjectReference Include="..\ZR.Tasks\ZR.Tasks.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Baidu.AI" Version="4.15.15" />
+		<PackageReference Include="Lazy.Captcha.Core" Version="2.0.7" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
+		<PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="106.15.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.12" />
+		<PackageReference Include="NLog.Web.AspNetCore" Version="5.3.11" />
+		<PackageReference Include="Mapster" Version="7.4.0" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.8" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Properties\PublishProfiles\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Topsdk">
+	    <HintPath>..\Topsdk\bin\Debug\net6.0\Topsdk.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="ip2region.xdb">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<Content Update="wwwroot\Generatecode\**\*">
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
+		<Content Update="wwwroot\export\**\*">
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+</Project>
