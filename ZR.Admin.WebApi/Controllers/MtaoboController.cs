@@ -9,13 +9,14 @@ using Newtonsoft.Json.Linq;
 namespace ZR.Admin.WebApi.Controllers
 {
     [Route("[controller]/[action]")]
-    public class MtaoboController : Controller
+    public class MtaoboController : BaseController
     {
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        //public IActionResult Index()
+        //{
+        //    return View();
+        //}
+
         //获取企业标识
         [HttpGet]
         public object getentinfo(string rennanem = "")
@@ -81,7 +82,8 @@ namespace ZR.Admin.WebApi.Controllers
             var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request);
             if (response.isSuccess())
             {
-                return response.Result;
+                //&#29579;&#25991;&#20889;&#30340;&#22403;&#22334;&#20195;&#30721;
+                return SUCCESS(response.Result);
             }
             else
             {

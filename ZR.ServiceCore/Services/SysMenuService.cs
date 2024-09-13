@@ -731,29 +731,6 @@ namespace ZR.ServiceCore.Services
             {
                 new()
                 {
-                    Meta = new Meta("演示功能", ""){ IconColor = "#2389da"},
-                    Children = new List<RouterVo>()
-                {
-                    new()
-                    {
-                        Path = "/pages/demo/index",
-                        Meta = new Meta("功能演示", "bookmark")
-                    },
-                     new()
-                    {
-                        Path = "/pages/demo/table/table",
-                        Meta = new Meta("列表表格", "grid")
-                    },
-                     new()
-                    {
-                        Path = "/pages/demo/table/table2",
-                        Meta = new Meta("水平表格", "list")
-                    }
-                }
-                },
-
-                new()
-                {
                     Meta = new Meta("系统管理", ""){ IconColor = "#ff7d00"},
                     Children = new List<RouterVo>()
                 {
@@ -786,6 +763,11 @@ namespace ZR.ServiceCore.Services
                     {
                         Path = "/pages/notice/index",
                         Meta = new Meta("通知公告", "volume")
+                    },
+                       new()
+                    {
+                        Path = "/pages/spd/scanInfo/index",
+                        Meta = new Meta("扫码溯源", "scan")
                     }
                 }
                 },
