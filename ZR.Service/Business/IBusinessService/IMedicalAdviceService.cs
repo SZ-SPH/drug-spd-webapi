@@ -4,7 +4,7 @@ using ZR.Model.Business;
 namespace ZR.Service.Business.IBusinessService
 {
     /// <summary>
-    /// 医嘱基础信息service接口
+    /// 医嘱service接口
     /// </summary>
     public interface IMedicalAdviceService : IBaseService<MedicalAdvice>
     {
@@ -16,6 +16,9 @@ namespace ZR.Service.Business.IBusinessService
         MedicalAdvice AddMedicalAdvice(MedicalAdvice parm);
         int UpdateMedicalAdvice(MedicalAdvice parm);
 
+        bool TruncateMedicalAdvice();
+
+        (string, object, object) ImportMedicalAdvice(List<MedicalAdvice> list);
 
         PagedInfo<MedicalAdviceDto> ExportList(MedicalAdviceQueryDto parm);
     }
