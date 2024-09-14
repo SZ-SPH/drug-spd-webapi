@@ -54,6 +54,11 @@ namespace ZR.Model.Business
         public string State { get; set; }
         
         public int? SupplierId { get; set; }
-
+       
+        /// <summary>
+        /// 发票
+        /// </summary>
+        public string InvoiceNumber { get; set; }
+        
     }
 }

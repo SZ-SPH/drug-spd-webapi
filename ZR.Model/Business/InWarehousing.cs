@@ -53,5 +53,39 @@ namespace ZR.Model.Business
         /// </summary>
         [SugarColumn(ColumnName = "rECEIPT_ID")]
         public int? ReceiptId { get; set; }
+
+
+        /// <summary>
+        /// 生产厂家 
+        /// </summary>
+        //[SugarColumn(ColumnName = "rECEIPT_ID")]
+        public int? ManufacturerId { get; set; }
+        /// <summary>
+        /// 有效期 
+        /// </summary>
+        //[SugarColumn(ColumnName = "rECEIPT_ID")]
+        public string Exprie { get; set; }
+        /// <summary>
+        /// 价格 
+        /// </summary>
+        //[SugarColumn(ColumnName = "rECEIPT_ID")]
+        public decimal? Price { get; set; }
+        /// <summary>
+        /// 货位号 
+        /// </summary>
+        //[SugarColumn(ColumnName = "rECEIPT_ID")]
+        public string LocationNumber { get; set; }
+        /// <summary>
+        /// 生产日期 
+        /// </summary>
+        //[SugarColumn(ColumnName = "rECEIPT_ID")]
+        public string DateOfManufacture { get; set; }
+        /// 最小单位 
+        /// </summary>
+        //[SugarColumn(ColumnName = "rECEIPT_ID")]
+        public string Minunit { get; set; }
+
+
+
     }
 }

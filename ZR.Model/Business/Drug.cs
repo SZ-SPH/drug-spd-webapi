@@ -3,6 +3,7 @@ namespace ZR.Model.Business
     /// <summary>
     /// 药品基础资料管理
     /// </summary>
+   [Tenant(0)]
     [SugarTable("DRUG")]
     public class Drug
     {

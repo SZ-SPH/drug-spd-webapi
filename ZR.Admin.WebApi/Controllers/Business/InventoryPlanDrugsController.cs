@@ -73,8 +73,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
                 var response = _InventoryPlanDrugsService.AddInventoryPlanDrugs(modal);
 
-                // You might want to handle the response for each item here
-                // For example, you can aggregate the responses, return the last one, etc.
             }
             return SUCCESS("All items processed successfully.");
 

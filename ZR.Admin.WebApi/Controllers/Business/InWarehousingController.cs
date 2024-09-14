@@ -72,11 +72,9 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
                 var response = _InWarehousingService.AddInWarehousing(modal);
 
-                // You might want to handle the response for each item here
-                // For example, you can aggregate the responses, return the last one, etc.
             }
 
-            // Return a success response; you can customize this based on how you handle multiple items
+     
             return SUCCESS("All items processed successfully.");
         }
 

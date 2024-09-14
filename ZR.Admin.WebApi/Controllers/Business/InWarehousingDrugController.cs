@@ -65,18 +65,16 @@ namespace ZR.Admin.WebApi.Controllers.Business
             //var response = _InWarehousingDrugService.AddInWarehousingDrug(modal);
 
             //return SUCCESS(response);
-            // Loop through each item in the list
+
             foreach (var parm in parmList)
             {
                 var modal = parm.Adapt<InWarehousingDrug>().ToCreate(HttpContext);
 
                 var response = _InWarehousingDrugService.AddInWarehousingDrug(modal);
 
-                // You might want to handle the response for each item here
-                // For example, you can aggregate the responses, return the last one, etc.
             }
 
-            // Return a success response; you can customize this based on how you handle multiple items
+
             return SUCCESS("All items processed successfully.");
         }
 

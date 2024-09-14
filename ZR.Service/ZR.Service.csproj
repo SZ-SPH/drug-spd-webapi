@@ -9,6 +9,9 @@
 		<NoWarn>1591</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
+	  <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.5.1" />
+	</ItemGroup>
+	<ItemGroup>
 		<ProjectReference Include="..\ZR.ServiceCore\ZR.ServiceCore.csproj" />
 	</ItemGroup>
 

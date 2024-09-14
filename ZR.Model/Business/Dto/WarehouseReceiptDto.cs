@@ -56,6 +56,10 @@ namespace ZR.Model.Business.Dto
 
         public int? SupplierId { get; set; }
 
+        /// <summary>
+        /// 发票
+        /// </summary>
+        public string InvoiceNumber { get; set; }
 
     }
 }
