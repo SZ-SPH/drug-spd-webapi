@@ -29,6 +29,15 @@ namespace ZR.Service.Business
             return response;
         }
 
+        public Drug GetListWithCondition(InWarehousingPdaDto parm)
+        {
+
+            var response = Queryable()
+                .Where(x => x.DrugName.Contains(parm.DrugName))
+                .First();
+            return response;
+        }
+
 
         /// <summary>
         /// 获取详情

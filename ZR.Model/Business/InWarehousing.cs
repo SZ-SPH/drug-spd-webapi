@@ -41,7 +41,7 @@ namespace ZR.Model.Business
         /// 药品入库数量 
         /// </summary>
         [SugarColumn(ColumnName = "iNVENTORY_QUANTITY")]
-        public string InventoryQuantity { get; set; }
+        public int InventoryQuantity { get; set; }
 
         /// <summary>
         /// 药品规格 

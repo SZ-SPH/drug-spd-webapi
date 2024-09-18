@@ -57,30 +57,30 @@ namespace ZR.Model.Business
         public string PackageLevel { get; set; }
 
         /// <summary>
-        /// 有效期 
+        /// 药品名称 
         /// </summary>
         [SugarColumn(ColumnName = "physic_Name")]
         public string PhysicName { get; set; }
 
         /// <summary>
-        /// 药品id 
+        /// 有效期 
         /// </summary>
         public string Exprie { get; set; }
 
         /// <summary>
-        /// 批准文号 
+        /// 药品id
         /// </summary>
         [SugarColumn(ColumnName = "drug_Ent_Base_Info_Id")]
         public string DrugEntBaseInfoId { get; set; }
 
         /// <summary>
-        /// 包装规格 
+        /// 批准文号
         /// </summary>
         [SugarColumn(ColumnName = "approval_Licence_No")]
         public string ApprovalLicenceNo { get; set; }
 
         /// <summary>
-        /// 制剂规格 
+        /// 包装规格
         /// </summary>
         [SugarColumn(ColumnName = "pkg_Spec_Crit")]
         public string PkgSpecCrit { get; set; }

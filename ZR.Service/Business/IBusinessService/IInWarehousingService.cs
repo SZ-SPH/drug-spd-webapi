@@ -14,6 +14,8 @@ namespace ZR.Service.Business.IBusinessService
 
 
         InWarehousing AddInWarehousing(InWarehousing parm);
+
+        InWarehousing AddInWarehousingWithCondition(InWarehousing parm);
         int UpdateInWarehousing(InWarehousing parm);
 
 
