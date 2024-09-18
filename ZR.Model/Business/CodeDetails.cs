@@ -17,7 +17,10 @@ namespace ZR.Model.Business
         /// 入库单id 
         /// </summary>
         public int? Receiptid { get; set; }
-
+        /// <summary>
+        /// 医嘱
+        /// </summary>
+        public int? MedicalAdviceId { get; set; }
         /// <summary>
         /// 药品id 
         /// </summary>

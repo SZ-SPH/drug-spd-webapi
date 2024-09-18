@@ -138,6 +138,7 @@ namespace ZR.Service.Business
             predicate = predicate.AndIF(parm.Receiptid != null, it => it.Receiptid == parm.Receiptid);
             predicate = predicate.AndIF(parm.DrugId != null, it => it.DrugId == parm.DrugId);
             predicate = predicate.AndIF(parm.DrugId != null, it => it.InWarehouseId == parm.InWarehouseId);
+            predicate = predicate.AndIF(parm.DrugId != null, it => it.MedicalAdviceId == parm.MedicalAdviceId);
 
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Code), it => it.Code == parm.Code);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.RefEntId), it => it.RefEntId == parm.RefEntId);

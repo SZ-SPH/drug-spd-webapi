@@ -12,8 +12,10 @@ namespace ZR.Model.Business.Dto
         public string RefEntId { get; set; }
         public string EntName { get; set; }
         public int? InWarehouseId { get; set; }
+        public int? MedicalAdviceId { get; set; }
 
         
+
     }
 
     /// <summary>
@@ -25,7 +27,9 @@ namespace ZR.Model.Business.Dto
         [ExcelColumn(Name = "Id")]
         [ExcelColumnName("Id")]
         public int Id { get; set; }
+        public int MedicalAdviceId { get; set; }
 
+        
         [ExcelColumn(Name = "入库单id")]
         [ExcelColumnName("入库单id")]
         public int? Receiptid { get; set; }
