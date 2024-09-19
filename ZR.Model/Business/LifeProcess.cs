@@ -31,12 +31,12 @@ namespace ZR.Model.Business
         /// <summary>
         /// 操作人 
         /// </summary>
-        public int? Operator { get; set; }
+        public string Operator { get; set; }
 
         /// <summary>
         /// 时间 
         /// </summary>
-        public int? Times { get; set; }
+        public string Times { get; set; }
 
         /// <summary>
         /// 详情 

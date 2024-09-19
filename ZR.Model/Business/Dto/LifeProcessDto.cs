@@ -27,9 +27,9 @@ namespace ZR.Model.Business.Dto
 
         public string CodeId { get; set; }
 
-        public int? Operator { get; set; }
+        public string Operator { get; set; }
 
-        public int? Times { get; set; }
+        public string Times { get; set; }
 
         public string Details { get; set; }
         public int? MedicalAdviceId { get; set; }
