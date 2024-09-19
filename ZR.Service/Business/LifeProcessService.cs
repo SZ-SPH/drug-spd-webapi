@@ -4,6 +4,7 @@ using ZR.Model.Business.Dto;
 using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ZR.Service.Business
 {
@@ -138,6 +139,9 @@ namespace ZR.Service.Business
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Receiptid), it => it.Receiptid == parm.Receiptid);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DRUGId), it => it.DRUGId == parm.DRUGId);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.CodeId), it => it.CodeId == parm.CodeId);
+
+            predicate = predicate.AndIF(parm.MedicalAdviceId != null, it => it.MedicalAdviceId == parm.MedicalAdviceId);
+
             return predicate;
         }
     }

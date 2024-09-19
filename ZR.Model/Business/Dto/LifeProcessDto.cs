@@ -9,6 +9,8 @@ namespace ZR.Model.Business.Dto
         public string Receiptid { get; set; }
         public string DRUGId { get; set; }
         public string CodeId { get; set; }
+        public int? MedicalAdviceId { get; set; }
+
     }
 
     /// <summary>
@@ -30,8 +32,9 @@ namespace ZR.Model.Business.Dto
         public int? Times { get; set; }
 
         public string Details { get; set; }
+        public int? MedicalAdviceId { get; set; }
 
-
+        
 
     }
 }

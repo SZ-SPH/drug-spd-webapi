@@ -42,6 +42,7 @@ namespace ZR.Model.Business
         /// 详情 
         /// </summary>
         public string Details { get; set; }
+        public int? MedicalAdviceId { get; set; }
 
     }
 }
