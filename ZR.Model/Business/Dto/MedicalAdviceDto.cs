@@ -9,7 +9,8 @@ namespace ZR.Model.Business.Dto
         public int? DrugId { get; set; }
         public string EmployeeName { get; set; }
         public string DepartmentChineseName { get; set; }
-    public string IpiReaistrationNo { get; set; }
+        public string IpiReaistrationNo { get; set; }
+        public string AssignDrugSeq { get; set; }
 }
 
 /// <summary>

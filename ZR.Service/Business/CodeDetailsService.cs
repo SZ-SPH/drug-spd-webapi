@@ -29,6 +29,16 @@ namespace ZR.Service.Business
             return response;
         }
 
+        public List<CodeDetails> QueryPdaAdviceBindCodeList(CodeDetailsQueryDto parm)
+        {
+            var predicate = QueryExp(parm);
+
+            var response = Queryable()
+                .Where(predicate.ToExpression())
+                .ToList();
+            return response;
+        }
+
 
         /// <summary>
         /// 获取详情
@@ -62,6 +72,38 @@ namespace ZR.Service.Business
         public int UpdateCodeDetails(CodeDetails model)
         {
             return Update(model, true);
+        }
+
+        public int PdaAdviceDeleteItem(string id)
+        {
+            int res = Context.Updateable<CodeDetails>()
+                .SetColumns(it => new CodeDetails
+                {
+                    MedicalAdviceId = null
+                })
+                .Where(it => it.Id.ToString() == id)
+                .ExecuteCommand();
+            return res;
+        }
+
+        /// <summary>
+        /// PDA 添加码信息
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        public int PdaAdviceAddItem(CodeDetailsQueryDto parm)
+        {
+            var codeDetailres = Context.Queryable<CodeDetails>()
+            .Where(it => it.MedicalAdviceId == null && it.Code == parm.Code)
+            .Take(1)  // 获取符合条件的第一条记录
+            .First();
+            int res = Context.Updateable<CodeDetails>()
+                .SetColumns(it => new CodeDetails
+                {
+                    MedicalAdviceId = parm.MedicalAdviceId
+                }).Where(it => it.Id == codeDetailres.Id)
+                .ExecuteCommand();
+            return res;
         }
 
         /// <summary>
@@ -139,6 +181,7 @@ namespace ZR.Service.Business
             predicate = predicate.AndIF(parm.DrugId != null, it => it.DrugId == parm.DrugId);
             predicate = predicate.AndIF(parm.DrugId != null, it => it.InWarehouseId == parm.InWarehouseId);
             predicate = predicate.AndIF(parm.DrugId != null, it => it.MedicalAdviceId == parm.MedicalAdviceId);
+            predicate = predicate.AndIF(parm.MedicalAdviceId != null, it => it.MedicalAdviceId == parm.MedicalAdviceId);
 
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Code), it => it.Code == parm.Code);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.RefEntId), it => it.RefEntId == parm.RefEntId);

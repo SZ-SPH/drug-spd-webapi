@@ -13,8 +13,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
     /// </summary>
     [Verify]
     [Route("business/CodeDetails")]
-
-
     public class CodeDetailsController : BaseController
     {
         /// <summary>
@@ -40,6 +38,46 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return SUCCESS(response);
         }
 
+        /// <summary>
+        /// 查询医嘱已经绑定的药品信息
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        [HttpGet("AdviceBindlist")]
+        [ActionPermissionFilter(Permission = "codedetails:list")]
+        public IActionResult QueryPdaAdviceBindCodeList([FromQuery] CodeDetailsQueryDto parm)
+        {
+            var response = _CodeDetailsService.QueryPdaAdviceBindCodeList(parm);
+            return SUCCESS(response);
+        }
+
+        /// <summary>
+        /// PDA 绑定医嘱添加追溯码信息
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        [HttpPost("AddAdviceItem")]
+        [ActionPermissionFilter(Permission = "codedetails:add")]
+        [Log(Title = "码信息", BusinessType = BusinessType.INSERT)]
+        public IActionResult PdaAdviceAddItem([FromBody] CodeDetailsQueryDto parm)
+        {
+            var response = _CodeDetailsService.PdaAdviceAddItem(parm);
+            return SUCCESS(response);
+        }
+
+        /// <summary>
+        /// PDA 删除跟追溯码的绑定关系
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("DeleteAdviceItem/{id}")]
+        [ActionPermissionFilter(Permission = "codedetails:delete")]
+        [Log(Title = "码信息", BusinessType = BusinessType.DELETE)]
+        public IActionResult PdaAdviceDeleteItem([FromRoute] string id)
+        {
+            var response = _CodeDetailsService.PdaAdviceDeleteItem(id);
+            return SUCCESS(response);
+        }
 
         /// <summary>
         /// 查询码信息详情
