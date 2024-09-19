@@ -38,6 +38,19 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return SUCCESS(response);
         }
 
+        /// <summary>
+        /// PDA根据HIS医嘱查询医嘱列表
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        [HttpGet("PDAList")]
+        [ActionPermissionFilter(Permission = "medicaladvice:list")]
+        public IActionResult PdaQueryMedicalAdviceByHisId([FromQuery] MedicalAdviceQueryDto parm)
+        {
+            var response = _MedicalAdviceService.PdaQueryMedicalAdviceByHisId(parm);
+            return SUCCESS(response);
+        }
+
 
         /// <summary>
         /// 查询医嘱详情

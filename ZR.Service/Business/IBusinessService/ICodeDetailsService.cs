@@ -21,5 +21,8 @@ namespace ZR.Service.Business.IBusinessService
         (string, object, object) ImportCodeDetails(List<CodeDetails> list);
 
         PagedInfo<CodeDetailsDto> ExportList(CodeDetailsQueryDto parm);
+        List<CodeDetails> QueryPdaAdviceBindCodeList(CodeDetailsQueryDto parm);
+        int PdaAdviceAddItem(CodeDetailsQueryDto parm);
+        int PdaAdviceDeleteItem(string id);
     }
 }

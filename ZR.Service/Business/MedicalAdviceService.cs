@@ -4,6 +4,7 @@ using ZR.Model.Business.Dto;
 using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
+using System;
 
 namespace ZR.Service.Business
 {
@@ -26,6 +27,51 @@ namespace ZR.Service.Business
                 .Where(predicate.ToExpression())
                 .ToPage<MedicalAdvice, MedicalAdviceDto>(parm);
 
+            return response;
+        }
+
+        public List<MedicalAdviceBind> PdaQueryMedicalAdviceByHisId(MedicalAdviceQueryDto parm)
+        {
+            var response = Context.Queryable<MedicalAdvice>()
+                .LeftJoin<Drug>((o, cus) => o.DrugId == cus.DrugId)
+                .LeftJoin<CodeDetails>((o,cus,cd) => o.OrderId == cd.MedicalAdviceId)
+                .Where(o => o.AssignDrugSeq == parm.AssignDrugSeq)
+                .GroupBy((o, cus, cd) => new
+                {
+                    o.OrderId,
+                    o.IpiRegistrationId,
+                    o.DrugId,
+                    o.TotalQty,
+                    o.OrderedDoctorId,
+                    o.EmployeeName,
+                    o.AssignDrugSeq,
+                    o.OrderedDeptId,
+                    o.DepartmentChineseName,
+                    o.IpiReaistrationNo,
+                    cus.DrugName,
+                    cus.DrugCode,
+                    cus.DrugCategory,
+                    cus.DrugMnemonicCode
+                })
+                .Select((o,cus,cd) => new MedicalAdviceBind()
+                {
+                    OrderId = o.OrderId,
+                    IpiRegistrationId = o.IpiRegistrationId,
+                    DrugId = o.DrugId,
+                    TotalQty = o.TotalQty,
+                    TrueQty = SqlFunc.AggregateCount(cd.MedicalAdviceId),
+                    OrderedDoctorId  = o.OrderedDoctorId,
+                    EmployeeName = o.EmployeeName,
+                    AssignDrugSeq = o.AssignDrugSeq,
+                    OrderedDeptId = o.OrderedDoctorId,
+                    DepartmentChineseName = o.DepartmentChineseName,
+                    IpiReaistrationNo = o.IpiReaistrationNo,
+                    DrugName = cus.DrugName,
+                    DrugCode = cus.DrugCode,
+                    DrugCategory = cus.DrugCategory,
+                    DrugMnemonicCode = cus.DrugMnemonicCode
+                })
+                .ToList();
             return response;
         }
 
@@ -136,6 +182,7 @@ namespace ZR.Service.Business
             var predicate = Expressionable.Create<MedicalAdvice>();
 
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.IpiRegistrationId), it => it.IpiRegistrationId == parm.IpiRegistrationId);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.AssignDrugSeq), it => it.AssignDrugSeq == parm.AssignDrugSeq);
             predicate = predicate.AndIF(parm.DrugId != null, it => it.DrugId == parm.DrugId);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.EmployeeName), it => it.EmployeeName == parm.EmployeeName);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DepartmentChineseName), it => it.DepartmentChineseName == parm.DepartmentChineseName);

@@ -10,6 +10,8 @@ namespace ZR.Service.Business.IBusinessService
     {
         PagedInfo<DrugDto> GetList(DrugQueryDto parm);
 
+        Drug GetListWithCondition(InWarehousingPdaDto parm);
+
         Drug GetInfo(int DrugId);
 
 

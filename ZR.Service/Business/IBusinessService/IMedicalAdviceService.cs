@@ -21,5 +21,6 @@ namespace ZR.Service.Business.IBusinessService
         (string, object, object) ImportMedicalAdvice(List<MedicalAdvice> list);
 
         PagedInfo<MedicalAdviceDto> ExportList(MedicalAdviceQueryDto parm);
+        List<MedicalAdviceBind> PdaQueryMedicalAdviceByHisId(MedicalAdviceQueryDto parm);
     }
 }

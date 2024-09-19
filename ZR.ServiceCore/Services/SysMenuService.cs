@@ -767,7 +767,12 @@ namespace ZR.ServiceCore.Services
                        new()
                     {
                         Path = "/pages/spd/scanInfo/index",
-                        Meta = new Meta("扫码溯源", "scan")
+                        Meta = new Meta("扫码入库", "scan")
+                    },
+                       new()
+                    {
+                        Path = "/pages/spd/adviceBind/index",
+                        Meta = new Meta("医嘱绑定", "list")
                     }
                 }
                 },

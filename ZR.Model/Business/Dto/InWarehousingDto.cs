@@ -80,6 +80,33 @@ namespace ZR.Model.Business.Dto
         public string Minunit { get; set; }
 
 
+    }
 
+    public class InWarehousingPdaDto
+    {
+        public int DrugId { get; set; }
+        public string DrugName { get; set; }
+        public string DrugCode { get; set; }
+        public string DrugMnemonicCode { get; set; }
+        public string DrugSpecifications { get; set; }
+        public string DrugCategory { get; set; }
+        public string DrugVarietyName { get; set; }
+        public string DrugClassification { get; set; }
+        public string TracingSourceCode { get; set; }
+        public string DrugBatchNumber { get; set; }
+        public string Minunit { get; set; }
+        public string ProduceName { get; set; }
+        public string ProduceId { get; set; }
+        public string PackageRatio { get; set; }
+        public string PackageUnit { get; set; }
+        public string ReceiptId { get; set; }
+        public string ExpireDate { get; set; }
+        public string Expire { get; set; }
+        public string ApprovalLicenceNo { get; set; }
+        public string PkgSpecCrit { get; set; }
+        public string PkgAmount { get; set; }
+        public string PrepnSpec { get; set; }
+        public string PrepnTypeDesc { get; set; }
+        public string ProduceDateStr { get; set; }
     }
 }

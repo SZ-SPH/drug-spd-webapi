@@ -14,8 +14,6 @@ namespace ZR.Model.Business.Dto
         public int? InWarehouseId { get; set; }
         public int? MedicalAdviceId { get; set; }
 
-        
-
     }
 
     /// <summary>

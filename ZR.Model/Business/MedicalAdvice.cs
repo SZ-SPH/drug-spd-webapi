@@ -60,11 +60,31 @@ namespace ZR.Model.Business
         [SugarColumn(ColumnName = "department_chinese_name")]
         public string DepartmentChineseName { get; set; }
 
-    /// <summary>
-    /// 住院号 
-    /// </summary>
-    [SugarColumn(ColumnName = "ipi_reaistration_no")]
-    public string IpiReaistrationNo { get; set; }
+        /// <summary>
+        /// 住院号 
+        /// </summary>
+        [SugarColumn(ColumnName = "ipi_reaistration_no")]
+        public string IpiReaistrationNo { get; set; }
 
 }
+
+    public class MedicalAdviceBind
+    {
+        public int OrderId { get; set; }
+        public string IpiRegistrationId { get; set; }
+        public int? DrugId { get; set; }
+        public int? TotalQty { get; set; }
+        public int? TrueQty { get; set; }
+        public string OrderedDoctorId { get; set; }
+        public string EmployeeName { get; set; }
+        public string AssignDrugSeq { get; set; }
+        public string OrderedDeptId { get; set; }
+        public string DepartmentChineseName { get; set; }
+        public string IpiReaistrationNo { get; set; }
+        public string DrugName { get; set; }
+        public string DrugCode { get; set; }
+        public string DrugCategory { get; set; }
+        public string DrugMnemonicCode { get; set; }
+    }
+
 }
