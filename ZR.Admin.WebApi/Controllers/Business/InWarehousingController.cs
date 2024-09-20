@@ -26,17 +26,21 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
         private readonly IDrugService _DrugService;
 
+        private readonly ILifeProcessService _LifeProcessService;
+
         public InWarehousingController(
             IInWarehousingService InWarehousingService,
             IWarehouseReceiptService WarehouseReceiptService,
             ICodeDetailsService CodeDetailsService,
-            IDrugService DrugService
+            IDrugService DrugService,
+            ILifeProcessService LifeProcessService
             )
         {
             _InWarehousingService = InWarehousingService;
             _WarehouseReceiptService = WarehouseReceiptService;
             _CodeDetailsService = CodeDetailsService;
             _DrugService = DrugService;
+            _LifeProcessService = LifeProcessService;
         }
 
         /// <summary>
@@ -139,6 +143,23 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 BatchNo = parmList.DrugBatchNumber
             };
             var response = _CodeDetailsService.AddCodeDetails(codeDetails);
+
+            var userName = HttpContext.GetName();
+            //TODO
+            Task.Run(async () =>
+            {
+                //在这添加生命周期 TODO
+                await _LifeProcessService.AddLifeProcessAsync(new LifeProcess
+                {
+                    Receiptid = modal.ReceiptId,
+                    DRUGId = modal.DrugId.ToString(),
+                    //CodeId TODO
+                    CodeId =  WarehousingResponse.Id.ToString(),
+                    Operator = userName,
+                    Times = DateTime.Now.ToString("yyyy-MM-dd HH:mm:SS"),
+                    Details = string.Format(@"{0}已入库，溯源码：{1}",modal.DrugName, parmList.TracingSourceCode)
+                });
+            });
 
             return SUCCESS("处理成功");
         }
