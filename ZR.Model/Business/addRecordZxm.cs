@@ -17,5 +17,9 @@ namespace ZR.Model.Business
         public List<ZsmItem> Zsm_List { get; set; }
     }
 
+    public class Med
+    {
+        public int Id { get; set; }
 
+    }
 }

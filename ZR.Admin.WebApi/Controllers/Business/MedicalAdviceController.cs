@@ -4,6 +4,10 @@ using ZR.Model.Business;
 using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
+using ZR.Service.Business;
+using Newtonsoft.Json;
+using System.Text;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 //创建时间：2024-09-14
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -19,10 +23,14 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// 医嘱接口
         /// </summary>
         private readonly IMedicalAdviceService _MedicalAdviceService;
+        private readonly ICodeDetailsService _CodeDetailsService;
 
-        public MedicalAdviceController(IMedicalAdviceService MedicalAdviceService)
+
+        public MedicalAdviceController(IMedicalAdviceService MedicalAdviceService,
+            ICodeDetailsService CodeDetailsService)
         {
             _MedicalAdviceService = MedicalAdviceService;
+            _CodeDetailsService = CodeDetailsService;
         }
 
         /// <summary>
@@ -180,5 +188,69 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return ExportExcel(result.Item2, result.Item1);
         }
 
+
+
+        /// <summary>
+        /// 医嘱回补追溯码
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("AddRequestZsm")]
+        [ActionPermissionFilter(Permission = "warehousereceipt:add")]
+        [Log(Title = "医嘱", BusinessType = BusinessType.INSERT)]
+        public async Task<IActionResult> AddRequestZsmAsync([FromBody] Med parmlist)
+        {
+            //获取到医嘱 从 code 表查询 相关的医嘱
+
+            List<ZsmItem> requests = new List<ZsmItem>();
+            RequestPayload list = new();
+
+            //查询
+            var response = _CodeDetailsService.outGetList(parmlist.Id);
+
+            for (int i = 0; i < response.Count; i++)
+            {
+                ZsmItem zsm = new ZsmItem();
+                zsm.Zsm = response[i].Code;
+                requests.Add(zsm);
+            }
+            list.Fymx_Id = parmlist.Id.ToString();
+            list.Zsm_List = requests;
+
+            string result = await AddRequestZsmAsync(list);
+
+
+            return SUCCESS("result");
+
+
+        }
+
+        private async Task<string> AddRequestZsmAsync(RequestPayload requests)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // 设置请求的URL
+                string url = "http://127.0.0.1:8080/xtHisService/xyxtSendAction!addRecordZxm.do";
+
+                // 将 requests 转换为 JSON 字符串
+                string json = JsonConvert.SerializeObject(requests); // 或者使用 System.Text.Json.JsonSerializer.Serialize(requests)
+
+                // 创建 HttpContent
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // 发送 POST 请求
+                HttpResponseMessage response = await client.PostAsync(url, content);
+
+                // 检查响应
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    // 处理错误
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}");
+                }
+            }
+        }
     }
 }

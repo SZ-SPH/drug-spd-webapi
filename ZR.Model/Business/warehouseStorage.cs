@@ -26,5 +26,12 @@ namespace ZR.Model.Business
 
     }
 
+    public class AllList
+    {
+        public int WarehouseId { get; set; }
+        public string Warehousecode { get; set; }
+        public string? org_id { get; set; }
+        public List<int> ReceiptIds { get; set; }
+    }
 
 }

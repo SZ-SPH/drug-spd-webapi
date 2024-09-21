@@ -28,7 +28,14 @@ namespace ZR.Service.Business
 
             return response;
         }
+        public List<CodeDetails> outGetList(int MID)
+        {
 
+            var response = Queryable()
+                .Where(x => x.MedicalAdviceId == MID).ToList();
+            return response;
+        }
+        
         public List<CodeDetails> QueryPdaAdviceBindCodeList(CodeDetailsQueryDto parm)
         {
             var predicate = QueryExp(parm);

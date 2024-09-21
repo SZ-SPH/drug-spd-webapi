@@ -38,6 +38,17 @@ namespace ZR.Service.Business
             return response;
         }
 
+   
+        public List<WarehouseReceipt> GetCode()
+        {
+            string currentDate = DateTime.Now.ToString("yyyyMMdd");
+
+            var response = Queryable()
+             .Where(x => x.ReceiptCode.Contains("RKD" + currentDate)).ToList();
+         
+
+            return response;
+        }
 
         /// <summary>
         /// 获取详情

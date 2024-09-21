@@ -77,12 +77,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [Log(Title = "入库信息", BusinessType = BusinessType.INSERT)]
         public IActionResult AddInWarehousing([FromBody] List<InWarehousingDto> parmList)
         {
-            //var modal = parm.Adapt<InWarehousing>().ToCreate(HttpContext);
-
-            //var response = _InWarehousingService.AddInWarehousing(modal);
-
-            //return SUCCESS(response);
-            // Loop through each item in the list
+    
             foreach (var parm in parmList)
             {
                 var modal = parm.Adapt<InWarehousing>().ToCreate(HttpContext);

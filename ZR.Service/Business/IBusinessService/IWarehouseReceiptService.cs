@@ -22,5 +22,7 @@ namespace ZR.Service.Business.IBusinessService
         (string, object, object) ImportWarehouseReceipt(List<WarehouseReceipt> list);
 
         PagedInfo<WarehouseReceiptDto> ExportList(WarehouseReceiptQueryDto parm);
+        List<WarehouseReceipt> GetCode();
+
     }
 }

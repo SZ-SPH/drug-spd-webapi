@@ -6,6 +6,10 @@ using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
 using SqlSugar;
 using ZR.Service.Business;
+using Aliyun.OSS;
+using System;
+using Newtonsoft.Json;
+using System.Text;
 
 //创建时间：2024-08-28
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -20,11 +24,17 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// <summary>
         /// 入库单接口
         /// </summary>
+        private readonly IInWarehousingService _InWarehousingService;
         private readonly IWarehouseReceiptService _WarehouseReceiptService;
 
-        public WarehouseReceiptController(IWarehouseReceiptService WarehouseReceiptService)
+        public WarehouseReceiptController(IWarehouseReceiptService WarehouseReceiptService
+            ,IInWarehousingService InWarehousingService
+            )
         {
             _WarehouseReceiptService = WarehouseReceiptService;
+            _InWarehousingService = InWarehousingService;
+
+
         }
 
         /// <summary>
@@ -74,32 +84,17 @@ namespace ZR.Admin.WebApi.Controllers.Business
         }
         private static Dictionary<string, int> dailySequence = new Dictionary<string, int>();
 
-        public static string GenerateInvoiceNumber()
+        public  string GenerateInvoiceNumber()
         {
             // 获取当前日期，格式为 YYYYMMDD
             string currentDate = DateTime.Now.ToString("yyyyMMdd");
-
-            // 检查字典中是否存在当前日期的键，如果不存在则添加并初始化为 0
-            if (!dailySequence.ContainsKey(currentDate))
-            {
-                dailySequence[currentDate] = 0;
-            }
-
+            var num = _WarehouseReceiptService.GetCode().Count;
             // 增加流水号
-            dailySequence[currentDate]++;
-
             // 获取当前日期的流水号
-            int sequenceNumber = dailySequence[currentDate];
-
-            // 生成单据编号，格式为 YYYYMMDD-XXX
-            string invoiceNumber = $"RKD{currentDate}{sequenceNumber:D3}";
-
+                        // 生成单据编号，格式为 YYYYMMDD-XXX
+            string invoiceNumber = $"RKD{currentDate}{num++:D3}";
             return invoiceNumber;
         }
-
-
-
-
 
 
 
@@ -110,34 +105,76 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [HttpPost("sendOutWarehouseReceipt")]
         [ActionPermissionFilter(Permission = "warehousereceipt:add")]
         [Log(Title = "入库单", BusinessType = BusinessType.INSERT)]
-        public IActionResult SendOutWarehouseReceipt([FromBody]List<warehouseStorageDto> parmlist)
-        { 
-            var rids=new List<int>();
-            var wids =new List<int>();
-            //获取数据 进行循环选择
-        //    foreach (var item in parmlist)
-        //    {
-        //       item.Warehouse_Code;
-        //       item.Supplier_Id;
-        //       item.ReceiptId;
-        ////查询关于这个的id 的发药数
-                   
-        //    }
-            //parm.Warehouse_Code = GenerateInvoiceNumber();
-            //parm.Org_Id =;
-            //parm.Supplier_Id =;
-            //parm.Med_List[0].
-
-
+        public async Task<IActionResult> SendOutWarehouseReceiptAsync([FromBody] AllList parmlist)
+        {
+            List<WarehouseStorageRequest> requests = new List<WarehouseStorageRequest>();
+            for (int i = 0; i < parmlist.ReceiptIds.Count; i++)
+            {
+                WarehouseStorageRequest storageDto = new WarehouseStorageRequest();
+                storageDto.Warehouse_Code = parmlist.Warehousecode;
+                storageDto.Org_Id = parmlist.org_id;
+                //查询 入库单明细
+                var response = _InWarehousingService.inGetList(parmlist.ReceiptIds[i]);
+                List<MedItem> items = new List<MedItem>();
+                for (int j = 0; j < response.Count; j++)
+                {
+                    MedItem medItem = new MedItem();
+                    medItem.Drug_Id = response[i].DrugId.ToString();
+                    medItem.Qty = response[i].InventoryQuantity.ToString();
+                    medItem.Batch_No = response[j].BatchNumber != null ? response[j].BatchNumber.ToString() : null;
+                    medItem.Indate = response[j].BatchNumber != null ? response[j].BatchNumber.ToString() : null;
+                    medItem.Prod_Date = response[j].BatchNumber != null ? response[j].BatchNumber.ToString() : null;
+                    medItem.Manufacturer_Id = "";
+                    items.Add(medItem);
+                }
+                storageDto.Med_List = items;
+                requests.Add(storageDto);         
+                //http://127.0.0.1:8080/xtHisService/xyxtSendAction!warehouseStorage.do
            
-            return SUCCESS("123");
+            }
+            // 调用发送请求的方法
+            string result = await SendRequestsAsync(requests);
+
+            //执行修改状态 成功的状态修改为已经推送
+
+
+
+            return SUCCESS("result");
+
+
         }
 
 
 
 
+        private async Task<string> SendRequestsAsync(List<WarehouseStorageRequest> requests)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // 设置请求的URL
+                string url = "http://127.0.0.1:8080/xtHisService/xyxtSendAction!warehouseStorage.do";
 
+                // 将 requests 转换为 JSON 字符串
+                string json = JsonConvert.SerializeObject(requests); // 或者使用 System.Text.Json.JsonSerializer.Serialize(requests)
 
+                // 创建 HttpContent
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // 发送 POST 请求
+                HttpResponseMessage response = await client.PostAsync(url, content);
+
+                // 检查响应
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    // 处理错误
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}");
+                }
+            }
+        }
         /// <summary>
         /// 添加单
         /// </summary>

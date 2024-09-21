@@ -121,5 +121,13 @@ namespace ZR.Service.Business
             predicate = predicate.AndIF(parm.ReceiptId != null, it => it.ReceiptId == parm.ReceiptId);
             return predicate;
         }
+
+        public List<InWarehousing> inGetList(int Id)
+        { 
+                var response = Queryable()
+                .Where(x => x.ReceiptId == Id).ToList();
+                 return response;
+        }
+
     }
 }
