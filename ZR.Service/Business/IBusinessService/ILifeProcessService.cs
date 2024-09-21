@@ -14,6 +14,8 @@ namespace ZR.Service.Business.IBusinessService
 
 
         LifeProcess AddLifeProcess(LifeProcess parm);
+
+        Task<int> AddLifeProcessAsync(LifeProcess parm);
         int UpdateLifeProcess(LifeProcess parm);
 
         bool TruncateLifeProcess();

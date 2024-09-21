@@ -55,6 +55,11 @@ namespace ZR.Service.Business
             return Insertable(model).ExecuteReturnEntity();
         }
 
+        public async Task<int> AddLifeProcessAsync(LifeProcess parm)
+        {
+            return await Insertable(parm).ExecuteCommandAsync();
+        }
+
         /// <summary>
         /// 修改生命周期
         /// </summary>
