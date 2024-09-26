@@ -71,7 +71,8 @@ namespace ZR.Admin.WebApi.Controllers
             {
                 code.Add(number);
             }
-            //code.Add("81797370314342290453");
+            //code.Add("81797370314342290453");         "ent_id": "00000000000017495183",
+
             // create request
             var request = new AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest();
             //--
