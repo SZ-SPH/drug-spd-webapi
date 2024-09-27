@@ -26,14 +26,21 @@ namespace ZR.Admin.WebApi.Controllers.Business
         private readonly IApplicationPlanService _ApplicationPlanService;
         private readonly IStockService _StockService;
 
+        private readonly IOutOrderService _OutOrderService;
+        private readonly IDrugService _DrugService;
+        private readonly IInWarehousingService _InWarehousingService;
 
 
         public OuWarehousetController(IOuWarehousetService OuWarehousetService, IApplicationPlanService ApplicationPlanService
-            , IStockService stockService)
+            , IStockService stockService, IInWarehousingService InWarehousingService, IOutOrderService outOrderService, IDrugService DrugService)
         {
             _OuWarehousetService = OuWarehousetService;
             _ApplicationPlanService = ApplicationPlanService;
             _StockService = stockService;
+            _OutOrderService = outOrderService;
+            _DrugService = DrugService;
+            _InWarehousingService = InWarehousingService;
+
         }
 
         /// <summary>
@@ -188,27 +195,56 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// <returns></returns>
         [HttpPost("stockAdd")]
         [ActionPermissionFilter(Permission = "stock:list")]
-        public IActionResult ALLADDplanStock([FromBody] List<int> idlist)
+        public IActionResult ALLADDplanStock([FromBody] outSork pm)
         {
-            //默认匹配药房
-            var response = _ApplicationPlanService.AllGetInfo(idlist);
+            var response = _ApplicationPlanService.AllGetInfo(pm.ids);
 
+            //创建出库单
+            var parm = new OutOrderDto();
+            parm.OutOrderCode = "";
+            parm.InpharmacyId = 0;
+            parm.OutWarehouseID =0;
+            parm.UseReceive = pm.username;
+            parm.Times = DateTime.Now;
+            parm.Remarks = "";
+            var om = parm.Adapt<OutOrder>().ToCreate(HttpContext);
+            var or = _OutOrderService.AddOutOrder(om);
+            //默认匹配药房
+
+  
+        
             foreach (var item in response) { 
             
                 OuWarehousetDto ouWarehouset = new OuWarehousetDto();
-
                 ouWarehouset.DrugId = item.DrugId;
-                 var x= _StockService.SGetList((int)item.DrugId);
+                var x= _StockService.SGetList((int)item.DrugId);
+                var DR = _DrugService.GetInfo((int)item.DrugId);
+                var info = DR.Adapt<DrugDto>();
                 ouWarehouset.OutWarehouseID =x.WarehouseID;
                 ouWarehouset.InpharmacyId = item.PharmacyId;
                 ouWarehouset.Qty = item.Qty;
                 ouWarehouset.PharmacyId = item.Id;
                 ouWarehouset.Times = DateTime.Now;
+                ouWarehouset.BatchNumber =x.BatchON;
+                ouWarehouset.Minunit=x.SUnit;
+                ouWarehouset.Buyprice = x.PurchasePrice;
+                ouWarehouset.Drugname = info.DrugName;
+                ouWarehouset.DrugSpecifications = info.DrugSpecifications;
+                ouWarehouset.ManufacturerName =info.ProduceName;
+                ouWarehouset.OutorderID = or.Id;
+
+
                 var modal = ouWarehouset.Adapt<OuWarehouset>().ToCreate(HttpContext);
                 var s = _OuWarehousetService.AddOuWarehouset(modal);
             }
             return SUCCESS(response);
 
         }
+    }
+    public class outSork
+    {
+        public string username { get; set; }  
+        public List<int> ids { get; set; }
+
     }
 }
