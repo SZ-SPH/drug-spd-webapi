@@ -41,7 +41,7 @@ namespace ZR.Model.Business.Dto
 
         [ExcelColumn(Name = "药品入库数量")]
         [ExcelColumnName("药品入库数量")]
-        public string InventoryQuantity { get; set; }
+        public decimal InventoryQuantity { get; set; }
 
         [ExcelColumn(Name = "药品规格")]
         [ExcelColumnName("药品规格")]

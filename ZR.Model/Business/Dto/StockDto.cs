@@ -40,15 +40,15 @@ namespace ZR.Model.Business.Dto
 
         [ExcelColumn(Name = "库存量")]
         [ExcelColumnName("库存量")]
-        public string InventoryQuantity { get; set; }
+        public decimal InventoryQuantity { get; set; }
 
         [ExcelColumn(Name = "预扣数量")]
         [ExcelColumnName("预扣数量")]
-        public string DeQuantity { get; set; }
+        public decimal DeQuantity { get; set; }
 
         [ExcelColumn(Name = "库存（库存量-预扣）")]
         [ExcelColumnName("库存（库存量-预扣）")]
-        public string ActualStock { get; set; }
+        public decimal ActualStock { get; set; }
 
         [ExcelColumn(Name = "最小单位")]
         [ExcelColumnName("最小单位")]

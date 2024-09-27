@@ -36,17 +36,17 @@ namespace ZR.Model.Business
         /// <summary>
         /// 库存量 
         /// </summary>
-        public string InventoryQuantity { get; set; }
+        public decimal InventoryQuantity { get; set; }
 
         /// <summary>
         /// 预扣数量 
         /// </summary>
-        public string DeQuantity { get; set; }
+        public decimal DeQuantity { get; set; }
 
         /// <summary>
         /// 库存（库存量-预扣） 
         /// </summary>
-        public string ActualStock { get; set; }
+        public decimal ActualStock { get; set; }
 
         /// <summary>
         /// 最小单位 

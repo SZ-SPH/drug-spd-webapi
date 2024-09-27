@@ -65,6 +65,15 @@ namespace ZR.Service.Business
         }
 
 
+        public Stock InGetInfo(int drugid,string batchON)
+        {
+            var response = Queryable()
+                           .Where(it =>it.DrugId==drugid && it.BatchON==batchON)
+                           .First();
+            return response;
+        }
+
+
         /// <summary>
         /// 添加库存
         /// </summary>

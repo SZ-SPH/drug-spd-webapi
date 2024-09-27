@@ -13,7 +13,7 @@ namespace ZR.Service.Business.IBusinessService
         Stock GetInfo(int Id);
         Stock SGetList(int Id);
 
-        
+        Stock InGetInfo(int Id,string batchON);
 
         Stock AddStock(Stock parm);
 
