@@ -28,14 +28,18 @@ namespace ZR.Model.Business.Dto
         [ExcelColumn(Name = "药品")]
         [ExcelColumnName("药品")]
         public int? DrugId { get; set; }
+        public string? DrugName { get; set; }
 
         [ExcelColumn(Name = "出库房")]
         [ExcelColumnName("出库房")]
         public int? OutWarehouseID { get; set; }
 
+        public string? OutWarehouseName { get; set; }
+
         [ExcelColumn(Name = "入药房")]
         [ExcelColumnName("入药房")]
         public int? InpharmacyId { get; set; }
+        public string? InpharmacyName { get; set; }
 
         [ExcelColumn(Name = "数量")]
         [ExcelColumnName("数量")]

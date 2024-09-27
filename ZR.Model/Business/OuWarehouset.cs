@@ -17,16 +17,19 @@ namespace ZR.Model.Business
         /// 药品 
         /// </summary>
         public int? DrugId { get; set; }
+        public string? DrugName { get; set; }
 
         /// <summary>
         /// 出库房 
         /// </summary>
-        public int? OutWarehouseID { get; set; }
+        public int OutWarehouseID { get; set; }
+        public string? OutWarehouseName { get; set; }
 
         /// <summary>
         /// 入药房 
         /// </summary>
         public int? InpharmacyId { get; set; }
+        public string? InpharmacyName { get; set; }
 
         /// <summary>
         /// 数量 

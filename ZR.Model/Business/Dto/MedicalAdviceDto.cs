@@ -31,6 +31,10 @@ public class MedicalAdviceDto
     [ExcelColumnName("药品id")]
     public int? DrugId { get; set; }
 
+    [ExcelColumn(Name = "药品名称")]
+    [ExcelColumnName("药品名称")]
+    public string? DrugName { get; set; }
+
     [ExcelColumn(Name = "药品数量")]
     [ExcelColumnName("药品数量")]
     public int? TotalQty { get; set; }

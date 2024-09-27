@@ -5,6 +5,7 @@ using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
 using System;
+using MailKit.Search;
 
 namespace ZR.Service.Business
 {
@@ -23,8 +24,25 @@ namespace ZR.Service.Business
         {
             var predicate = QueryExp(parm);
 
-            var response = Queryable()
+            parm.Sort = "";
+            var response = Context.Queryable<MedicalAdvice>()
+                .LeftJoin<Drug>((it,d) => it.DrugId == d.DrugId)
+                .OrderBy((it) => it.OrderId)
                 .Where(predicate.ToExpression())
+                .Select((it,d) => new MedicalAdvice
+                {
+                    IpiReaistrationNo = it.IpiReaistrationNo,
+                    DepartmentChineseName = it.DepartmentChineseName,
+                    OrderedDeptId = it.OrderedDeptId,
+                    AssignDrugSeq = it.AssignDrugSeq,
+                    EmployeeName = it.EmployeeName,
+                    OrderedDoctorId = it.OrderedDoctorId,
+                    TotalQty = it.TotalQty,
+                    DrugName = d.DrugName,
+                    DrugId = it.DrugId,
+                    IpiRegistrationId = it.IpiRegistrationId,
+                    OrderId = it.OrderId
+                })
                 .ToPage<MedicalAdvice, MedicalAdviceDto>(parm);
 
             return response;

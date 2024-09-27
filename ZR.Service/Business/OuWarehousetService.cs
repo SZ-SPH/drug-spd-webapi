@@ -22,9 +22,27 @@ namespace ZR.Service.Business
         {
             var predicate = QueryExp(parm);
 
-            var response = Queryable()
+            parm.Sort = "";
+
+            var response = Context.Queryable<OuWarehouset>()
+                .LeftJoin<Drug>((it, d) => it.DrugId == d.DrugId)
+                .LeftJoin<Warehouse>((it, d,w) => it.OutWarehouseID == w.Id)
+                .LeftJoin<Pharmacy>((it, d,w,p) => it.InpharmacyId == p.Id)
                 //.OrderBy("Id asc")
+                .OrderBy((it) => it.Id)
                 .Where(predicate.ToExpression())
+                .Select((it, d, w, p) => new OuWarehouset
+                {
+                    DrugId = it.DrugId,
+                    DrugName = d.DrugName,
+                    OutWarehouseID = it.OutWarehouseID,
+                    OutWarehouseName = w.Name,
+                    InpharmacyId = it.InpharmacyId,
+                    InpharmacyName  = p.PharmacyName,
+                    Qty = it.Qty,
+                    PharmacyId = it.PharmacyId,
+                    Times = it.Times
+                })
                 .ToPage<OuWarehouset, OuWarehousetDto>(parm);
 
             return response;

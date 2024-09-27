@@ -24,6 +24,8 @@ namespace ZR.Model.Business
         [SugarColumn(ColumnName = "dRUG_ID")]
         public int? DrugId { get; set; }
 
+        public string? DrugName { get; set; }
+
         /// <summary>
         /// 药品数量 
         /// </summary>
