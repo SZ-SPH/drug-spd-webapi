@@ -14,6 +14,8 @@ namespace ZR.Service.Business.IBusinessService
 
 
         Stock AddStock(Stock parm);
+
+        Task<Stock> AddStockAsync(Stock parm);
         int UpdateStock(Stock parm);
         
         bool TruncateStock();

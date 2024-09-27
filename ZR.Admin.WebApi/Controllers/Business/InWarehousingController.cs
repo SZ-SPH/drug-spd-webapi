@@ -6,6 +6,9 @@ using ZR.Admin.WebApi.Filters;
 using Aliyun.OSS;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using Microsoft.Extensions.Logging;
+using ZR.Service.Business;
+using Org.BouncyCastle.Bcpg;
+using Infrastructure;
 namespace ZR.Admin.WebApi.Controllers.Business
 {
     /// <summary>
@@ -28,12 +31,15 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
         private readonly ILifeProcessService _LifeProcessService;
 
+        private readonly IStockService _StockService;
+
         public InWarehousingController(
             IInWarehousingService InWarehousingService,
             IWarehouseReceiptService WarehouseReceiptService,
             ICodeDetailsService CodeDetailsService,
             IDrugService DrugService,
-            ILifeProcessService LifeProcessService
+            ILifeProcessService LifeProcessService,
+            IStockService StockService
             )
         {
             _InWarehousingService = InWarehousingService;
@@ -41,6 +47,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             _CodeDetailsService = CodeDetailsService;
             _DrugService = DrugService;
             _LifeProcessService = LifeProcessService;
+            _StockService = StockService;
         }
 
         /// <summary>
@@ -87,6 +94,29 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 var modal = parm.Adapt<InWarehousing>().ToCreate(HttpContext);
 
                 var response = _InWarehousingService.AddInWarehousing(modal);
+
+                //异步添加库存
+                //有问题
+                Task.Run(async () =>
+                {
+                    Stock stock = new Stock
+                    {
+                        DrugId = parm.DrugId,
+                        Drugqty = 0,
+                        PurchasePrice = (decimal)parm.Price,
+                        RetailPrice = 0,
+                        InventoryQuantity = parm.InventoryQuantity,
+                        DeQuantity = "",
+                        ActualStock = "",
+                        SUnit = parm.Minunit,
+                        Packqty = int.Parse(parm.InventoryQuantity),
+                        PackUnit = parm.DrugSpecifications,
+                        BatchON = parm.BatchNumber,
+                        BatchNum = 0,
+                    };
+                    await _StockService.AddStockAsync(stock);
+
+                });
 
             }
 
