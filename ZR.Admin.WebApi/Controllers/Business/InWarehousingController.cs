@@ -256,6 +256,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 Stock item = new Stock
                 {
                     DrugId = parm.DrugId,
+                    
                     Drugqty = 0,
                     PurchasePrice = (decimal)parm.Price,
                     RetailPrice = 0,
