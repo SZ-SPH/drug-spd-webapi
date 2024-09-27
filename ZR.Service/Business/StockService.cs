@@ -24,7 +24,6 @@ namespace ZR.Service.Business
             var predicate = QueryExp(parm);
 
             var response = Queryable()
-                //.OrderBy("Id asc")
                 .Where(predicate.ToExpression())
                 .ToPage<Stock, StockDto>(parm);
 
@@ -74,6 +73,11 @@ namespace ZR.Service.Business
         public Stock AddStock(Stock model)
         {
             return Insertable(model).ExecuteReturnEntity();
+        }
+
+        public async Task<Stock> AddStockAsync(Stock parm)
+        {
+            return await Insertable(parm).ExecuteReturnEntityAsync();
         }
 
         /// <summary>
