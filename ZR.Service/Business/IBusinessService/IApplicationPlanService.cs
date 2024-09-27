@@ -11,6 +11,7 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<ApplicationPlanDto> GetList(ApplicationPlanQueryDto parm);
 
         ApplicationPlan GetInfo(int Id);
+        List<ApplicationPlan> AllGetInfo(List<int> parm);
 
 
         ApplicationPlan AddApplicationPlan(ApplicationPlan parm);

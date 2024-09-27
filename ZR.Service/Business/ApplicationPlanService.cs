@@ -45,6 +45,18 @@ namespace ZR.Service.Business
             return response;
         }
 
+
+       
+        public List<ApplicationPlan> AllGetInfo(List<int> Ids)
+        {
+            var drugIds = Ids; // 你的 drugid 列表
+            var response = Queryable()
+                           .Where(it => Ids.Contains((int)it.Id))
+                           .ToList();
+            return response;
+        }
+
+
         /// <summary>
         /// 添加申请计划
         /// </summary>

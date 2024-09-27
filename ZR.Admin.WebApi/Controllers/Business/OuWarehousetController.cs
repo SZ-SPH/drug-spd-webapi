@@ -4,6 +4,10 @@ using ZR.Model.Business;
 using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
+using ZR.Service.Business;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Aliyun.OSS;
+using SqlSugar;
 
 //创建时间：2024-09-26
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -19,10 +23,17 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// 出库接口
         /// </summary>
         private readonly IOuWarehousetService _OuWarehousetService;
+        private readonly IApplicationPlanService _ApplicationPlanService;
+        private readonly IStockService _StockService;
 
-        public OuWarehousetController(IOuWarehousetService OuWarehousetService)
+
+
+        public OuWarehousetController(IOuWarehousetService OuWarehousetService, IApplicationPlanService ApplicationPlanService
+            , IStockService stockService)
         {
             _OuWarehousetService = OuWarehousetService;
+            _ApplicationPlanService = ApplicationPlanService;
+            _StockService = stockService;
         }
 
         /// <summary>
@@ -167,5 +178,37 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return ExportExcel(result.Item2, result.Item1);
         }
 
+
+
+
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <param name="idlist"></param>
+        /// <returns></returns>
+        [HttpPost("stockAdd")]
+        [ActionPermissionFilter(Permission = "stock:list")]
+        public IActionResult ALLADDplanStock([FromBody] List<int> idlist)
+        {
+            //默认匹配药房
+            var response = _ApplicationPlanService.AllGetInfo(idlist);
+
+            foreach (var item in response) { 
+            
+                OuWarehousetDto ouWarehouset = new OuWarehousetDto();
+
+                ouWarehouset.DrugId = item.DrugId;
+                 var x= _StockService.SGetList((int)item.DrugId);
+                ouWarehouset.OutWarehouseID =x.WarehouseID;
+                ouWarehouset.InpharmacyId = item.PharmacyId;
+                ouWarehouset.Qty = item.Qty;
+                ouWarehouset.PharmacyId = item.Id;
+                ouWarehouset.Times = DateTime.Now;
+                var modal = ouWarehouset.Adapt<OuWarehouset>().ToCreate(HttpContext);
+                var s = _OuWarehousetService.AddOuWarehouset(modal);
+            }
+            return SUCCESS(response);
+
+        }
     }
 }

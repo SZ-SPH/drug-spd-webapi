@@ -4,6 +4,7 @@ using ZR.Model.Business.Dto;
 using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
+using Org.BouncyCastle.Crypto;
 
 namespace ZR.Service.Business
 {
@@ -31,6 +32,16 @@ namespace ZR.Service.Business
         }
 
 
+        public Stock SGetList(int drugid)
+        {
+
+            var response = Queryable()
+                .OrderBy("Id asc")
+                .Where(x => x.DrugId == drugid).First();
+
+
+            return response;
+        }
         /// <summary>
         /// 获取详情
         /// </summary>
@@ -44,6 +55,16 @@ namespace ZR.Service.Business
 
             return response;
         }
+
+        public List<Stock> AllGetInfo(List<int> Ids)
+        {
+            var drugIds = Ids; // 你的 drugid 列表
+            var response = Queryable()
+                           .Where(it => Ids.Contains((int)it.DrugId))
+                           .ToList();
+            return response;
+        }
+
 
         /// <summary>
         /// 添加库存

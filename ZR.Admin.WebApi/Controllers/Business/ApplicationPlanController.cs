@@ -4,6 +4,7 @@ using ZR.Model.Business;
 using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
+using ZR.Service.Business;
 
 //创建时间：2024-09-26
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -53,6 +54,22 @@ namespace ZR.Admin.WebApi.Controllers.Business
             var info = response.Adapt<ApplicationPlanDto>();
             return SUCCESS(info);
         }
+
+
+        /// <summary>
+        /// 查询库存列表
+        /// </summary>
+        /// <param name="idlist"></param>
+        /// <returns></returns>
+        [HttpPost("AllGetlist")]
+        [ActionPermissionFilter(Permission = "stock:list")]
+        public IActionResult ALLplanQueryStock([FromBody] List<int> idlist)
+        {
+            var response = _ApplicationPlanService.AllGetInfo(idlist);
+            return SUCCESS(response);
+
+        }
+
 
         /// <summary>
         /// 添加申请计划
