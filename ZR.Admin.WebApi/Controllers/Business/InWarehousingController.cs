@@ -101,21 +101,21 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 // 添加完成后 加入库存表 先判断是否存在（药品id批号 等等） 若存在 则添加数量 不存在则新增 
 
                 var stock = _StockService.InGetInfo((int)response.DrugId,response.BatchNumber);
-                if (stock != null)
+                if (stock != null&& stock.Id > 0)
                 {
                     stock.InventoryQuantity += response.InventoryQuantity;
                     //修改
                     _StockService.UpdateStock(stock);
 
                 }
-                else if (stock.Id>0)
+                else if (stock == null)
                 {
                     //新增
                     Stock item = new Stock
                     {
                         DrugId = parm.DrugId,
                         Drugqty = 0,
-                        PurchasePrice = (decimal)parm.Price,
+                        PurchasePrice = (decimal)(parm.Price==null?0:parm.Price),
                         RetailPrice = 0,
                         InventoryQuantity = parm.InventoryQuantity,
                         DeQuantity = 0,
@@ -240,17 +240,17 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 var modal = parm.Adapt<InWarehousing>().ToUpdate(HttpContext);
    var response = _InWarehousingService.UpdateInWarehousing(modal);
 
-            if (response>0)
+            if (response>0)     
             {
               var stock = _StockService.InGetInfo((int)modal.DrugId, modal.BatchNumber);
-            if (stock != null)
+            if (stock != null&& stock.Id > 0)
             {
                 stock.InventoryQuantity += modal.InventoryQuantity;
                 //修改
                 _StockService.UpdateStock(stock);
 
             }
-            else if (stock.Id > 0)
+            else if (stock==null)
             {
                 //新增
                 Stock item = new Stock
@@ -258,7 +258,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     DrugId = parm.DrugId,
                     
                     Drugqty = 0,
-                    PurchasePrice = (decimal)parm.Price,
+                    PurchasePrice = parm.Price == null?0: (decimal)parm.Price,
                     RetailPrice = 0,
                     InventoryQuantity = parm.InventoryQuantity,
                     DeQuantity = 0,

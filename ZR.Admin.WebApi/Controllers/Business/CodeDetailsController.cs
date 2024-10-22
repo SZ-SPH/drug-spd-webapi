@@ -98,17 +98,39 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// 添加码信息
         /// </summary>
         /// <returns></returns>
+        //[HttpPost]
+        //[ActionPermissionFilter(Permission = "codedetails:add")]
+        //[Log(Title = "码信息", BusinessType = BusinessType.INSERT)]
+        //public IActionResult AddCodeDetails([FromBody] CodeDetailsDto parm)
+        //{
+        //    var modal = parm.Adapt<CodeDetails>().ToCreate(HttpContext);
+
+        //    var response = _CodeDetailsService.AddCodeDetails(modal);
+
+        //    return SUCCESS(response);
+        //}
+        /// <summary>
+        /// 添加码信息
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         [ActionPermissionFilter(Permission = "codedetails:add")]
         [Log(Title = "码信息", BusinessType = BusinessType.INSERT)]
-        public IActionResult AddCodeDetails([FromBody] CodeDetailsDto parm)
+        public IActionResult AddCodeDetails([FromBody]List<CodeDetailsDto> parm)
         {
-            var modal = parm.Adapt<CodeDetails>().ToCreate(HttpContext);
+            foreach (var item in parm)
+            {
+                var modal = item.Adapt<CodeDetails>().ToCreate(HttpContext);
 
-            var response = _CodeDetailsService.AddCodeDetails(modal);
+                var response = _CodeDetailsService.AddCodeDetails(modal);
+            }
+            //var modal = parm.Adapt<CodeDetails>().ToCreate(HttpContext);
 
-            return SUCCESS(response);
+            //var response = _CodeDetailsService.AddCodeDetails(modal);
+
+            return SUCCESS("true");
         }
+
 
         /// <summary>
         /// 更新码信息
