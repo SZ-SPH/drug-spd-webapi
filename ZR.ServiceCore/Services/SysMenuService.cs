@@ -773,6 +773,11 @@ namespace ZR.ServiceCore.Services
                     {
                         Path = "/pages/spd/adviceBind/index",
                         Meta = new Meta("医嘱绑定", "list")
+                    },
+                       new()
+                    {
+                        Path = "/pages/spd/scanList/index",
+                        Meta = new Meta("扫码盘点", "scan")
                     }
                 }
                 },

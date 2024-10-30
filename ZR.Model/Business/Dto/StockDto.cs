@@ -12,6 +12,25 @@ namespace ZR.Model.Business.Dto
         public int? WarehouseID { get; set; }
     }
 
+    public class PdaStockVo
+    {
+        //ID
+        public int Id { get; set; }
+        //药品ID
+        public int? DrugId { get; set; }
+        //库存数量
+        public decimal InventoryQuantity { get; set; }
+        //药品名称
+        public string DrugName { get; set; }
+        //药品编码
+        public string DrugCode { get; set; }
+        //药品助记码
+        public string DrugMnemonicCode { get; set; }
+        //药品规格
+        public string DrugSpecifications { get; set; }
+
+    }
+
     /// <summary>
     /// 库存输入输出对象
     /// </summary>

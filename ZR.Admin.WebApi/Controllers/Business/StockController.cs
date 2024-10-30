@@ -40,6 +40,14 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return SUCCESS(response);
         }
 
+        //PDA查询库存列表
+        [HttpGet("pdalist")]
+        [ActionPermissionFilter(Permission = "stock:list")]
+        public IActionResult PdaQueryStock([FromQuery] StockQueryDto parm)
+        {
+            var response = _StockService.GetPdaList(parm);
+            return SUCCESS(response);
+        }
         /// <summary>
         /// 查询库存列表
         /// </summary>

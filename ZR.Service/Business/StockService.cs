@@ -30,6 +30,30 @@ namespace ZR.Service.Business
             return response;
         }
 
+        /// <summary>
+        /// PDA查询库存列表
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        public List<PdaStockVo> GetPdaList(StockQueryDto parm)
+        {
+            var predicate = QueryExp(parm);
+            var value = Context.Queryable<Stock>()
+                .LeftJoin<Drug>((s, d) => s.DrugId == d.DrugId)
+                .Where(predicate.ToExpression())
+                .Select((s, d) => new PdaStockVo
+                {
+                    Id = s.Id,
+                    DrugId = s.DrugId,
+                    InventoryQuantity = s.InventoryQuantity,
+                    DrugName = d.DrugName,
+                    DrugCode = d.DrugCode,
+                    DrugMnemonicCode = d.DrugMnemonicCode,
+                    DrugSpecifications = d.DrugSpecifications
+                }).ToList();
+            return value;
+
+        }
 
         public Stock SGetList(int drugid)
         {
