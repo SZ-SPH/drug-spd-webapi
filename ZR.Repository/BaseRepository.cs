@@ -318,6 +318,26 @@ namespace ZR.Repository
         }
 
         /// <summary>
+        /// 读取列表
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">查询表单式</param>
+        /// <param name="parm">分页参数</param>
+        /// <returns></returns>
+        public static PagedInfo<T> ToPageWithOutSort<T>(this ISugarQueryable<T> source, PagerInfo parm)
+        {
+            var page = new PagedInfo<T>();
+            var total = 0;
+            page.PageSize = parm.PageSize;
+            page.PageIndex = parm.PageNum;
+            page.Result = source
+                //.OrderByIF(parm.Sort.IsNotEmpty(), $"{parm.Sort.ToSqlFilter()} {(!string.IsNullOrWhiteSpace(parm.SortType) && parm.SortType.Contains("desc") ? "desc" : "asc")}")
+                .ToPageList(parm.PageNum, parm.PageSize, ref total);
+            page.TotalNum = total;
+            return page;
+        }
+
+        /// <summary>
         /// 转指定实体类Dto
         /// </summary>
         /// <typeparam name="T"></typeparam>
