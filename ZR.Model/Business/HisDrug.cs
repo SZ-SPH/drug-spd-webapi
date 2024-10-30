@@ -7,6 +7,11 @@
     [SugarTable("xthis_nhqdwrmyy.V_XYXT_DRM_DICTIONARY")]
     public class HisDrug
     {
+        public string iD
+        {
+            get; set;
+        }
+
         public string drugs_code { get; set; }
 
 

@@ -53,7 +53,7 @@ namespace ZR.Model.Business.Dto
         /// 生产厂家 
         /// </summary>
         //[SugarColumn(ColumnName = "rECEIPT_ID")]
-        public int? ManufacturerId { get; set; }
+        public string ManufacturerId { get; set; }
         /// <summary>
         /// 有效期 
         /// </summary>

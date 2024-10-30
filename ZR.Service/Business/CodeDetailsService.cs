@@ -4,6 +4,7 @@ using ZR.Model.Business.Dto;
 using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
+using System.ComponentModel;
 
 namespace ZR.Service.Business
 {
@@ -107,7 +108,7 @@ namespace ZR.Service.Business
             int res = Context.Updateable<CodeDetails>()
                 .SetColumns(it => new CodeDetails
                 {
-                    MedicalAdviceId = parm.MedicalAdviceId
+                    MedicalAdviceId =parm.MedicalAdviceId
                 }).Where(it => it.Id == codeDetailres.Id)
                 .ExecuteCommand();
             return res;
@@ -161,20 +162,37 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<CodeDetailsDto> ExportList(CodeDetailsQueryDto parm)
+        public PagedInfo<CodeexportDto> ExportList(CodeDetailsQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
                 .Where(predicate.ToExpression())
-                .Select((it) => new CodeDetailsDto()
-                {
+                .Select(it => new CodeexportDto()
+                {        
+                    Code = it.Code,
+                    PhysicTypeDesc = it.PhysicTypeDesc,
+                    RefEntId = it.RefEntId,
+                    EntName = it.EntName,
+                    // 使用辅助方法获取枚举描述
+                    PackageLevel = it.PackageLevel,
+                    PhysicName = it.PhysicName,
+                    Exprie = it.Exprie,
+                    DrugEntBaseInfoId = it.DrugEntBaseInfoId,
+                    ApprovalLicenceNo = it.ApprovalLicenceNo,
+                    PkgSpecCrit = it.PkgSpecCrit,
+                    PrepnSpec = it.PrepnSpec,
+                    PrepnTypeDesc = it.PrepnTypeDesc,
+                    ProduceDateStr = it.ProduceDateStr,
+                    PkgAmount = it.PkgAmount,
+                    ExpireDate = it.ExpireDate,
+                    BatchNo = it.BatchNo,
                 }, true)
                 .ToPage(parm);
 
             return response;
         }
-
+   
         /// <summary>
         /// 查询导出表达式
         /// </summary>

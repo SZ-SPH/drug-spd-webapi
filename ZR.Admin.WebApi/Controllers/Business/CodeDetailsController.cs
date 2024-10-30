@@ -19,10 +19,13 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// 码信息接口
         /// </summary>
         private readonly ICodeDetailsService _CodeDetailsService;
+        private readonly IWarehouseReceiptService _WarehouseReceiptService;
 
-        public CodeDetailsController(ICodeDetailsService CodeDetailsService)
+        public CodeDetailsController(ICodeDetailsService CodeDetailsService, IWarehouseReceiptService WarehouseReceiptService)
         {
             _CodeDetailsService = CodeDetailsService;
+            _WarehouseReceiptService = WarehouseReceiptService;
+
         }
 
         /// <summary>
@@ -116,11 +119,13 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [HttpPost]
         [ActionPermissionFilter(Permission = "codedetails:add")]
         [Log(Title = "码信息", BusinessType = BusinessType.INSERT)]
-        public IActionResult AddCodeDetails([FromBody]List<CodeDetailsDto> parm)
+        public IActionResult AddCodeDetails([FromBody]List<CodeDetailsDto> parm,string ids)
         {
             foreach (var item in parm)
             {
                 var modal = item.Adapt<CodeDetails>().ToCreate(HttpContext);
+                modal.InvoiceCode = _WarehouseReceiptService.GetInfo(int.Parse(ids)).InvoiceNumber;
+                //var info = response.Adapt<WarehouseReceiptDto>();
 
                 var response = _CodeDetailsService.AddCodeDetails(modal);
             }

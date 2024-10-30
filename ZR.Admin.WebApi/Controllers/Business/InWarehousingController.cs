@@ -238,7 +238,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             else
             {
                 var modal = parm.Adapt<InWarehousing>().ToUpdate(HttpContext);
-   var response = _InWarehousingService.UpdateInWarehousing(modal);
+                var response = _InWarehousingService.UpdateInWarehousing(modal);
 
             if (response>0)     
             {

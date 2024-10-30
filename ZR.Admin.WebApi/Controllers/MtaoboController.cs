@@ -148,6 +148,8 @@ namespace ZR.Admin.WebApi.Controllers
         {
             public string Code { get; set; }
             public string PackageLevel { get; set; }
+            public string ParentCode { get; set; }
+
 
         }
 
@@ -160,7 +162,7 @@ namespace ZR.Admin.WebApi.Controllers
             {
                 resultList = new List<Vcodes>(); // 初始化列表
             }
-            //获取到的码 获取到等级后 是否存在有下属 若不存在先保存
+            //获取到的码 获取到等级后 是否存在有下属 若不存在先保存 -- 大码为3-需要查询获取 添加父码
             for (int i = 0; i < ModelState.Count; i++)
             {
                 if (ModelState[i].PackageLevel == "3" || ModelState[i].PackageLevel == "2")
@@ -189,6 +191,7 @@ namespace ZR.Admin.WebApi.Controllers
                                     Vcodes vcodes = new Vcodes();
                                     vcodes.Code = res.Result.ModelList[j].CodeRelationList[k].Code;
                                     vcodes.PackageLevel = res.Result.ModelList[j].CodeRelationList[k].CodePackLevel;
+                                    vcodes.ParentCode= res.Result.ModelList[j].CodeRelationList[k].ParentCode;
                                     resultList.Add(vcodes);
                                 }
                             }

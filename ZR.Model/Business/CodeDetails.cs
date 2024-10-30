@@ -123,6 +123,10 @@ namespace ZR.Model.Business
 
         public int InWarehouseId { get; set; }
 
-
+        /// <summary>
+        /// 发票号 
+        /// </summary>
+        [SugarColumn(ColumnName = "invoiceCode")]
+        public string InvoiceCode { get; set; }
     }
 }
