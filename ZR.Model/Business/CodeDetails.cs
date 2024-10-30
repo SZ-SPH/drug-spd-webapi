@@ -128,5 +128,7 @@ namespace ZR.Model.Business
         /// </summary>
         [SugarColumn(ColumnName = "invoiceCode")]
         public string InvoiceCode { get; set; }
+        public string ParentCode { get; set; }
+        //ParentCode
     }
 }

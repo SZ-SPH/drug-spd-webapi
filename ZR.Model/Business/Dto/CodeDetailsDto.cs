@@ -103,7 +103,8 @@ namespace ZR.Model.Business.Dto
         public string BatchNo { get; set; }
 
         public int? InWarehouseId { get; set; }
-        
+        public string ParentCode { get; set; }
+
     }
 
 
@@ -172,6 +173,10 @@ namespace ZR.Model.Business.Dto
         [ExcelColumn(Name = "批次号")]
         [ExcelColumnName("批次号")]
         public string BatchNo { get; set; }
+
+        [ExcelColumn(Name = "发票号")]
+        [ExcelColumnName("发票号")]
+        public string InvoiceCode { get; set; }
 
     }
     public enum CodeType

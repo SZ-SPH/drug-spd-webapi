@@ -92,42 +92,35 @@ namespace ZR.Admin.WebApi.Controllers.Business
             foreach (var parm in parmList)
             {
                 var modal = parm.Adapt<InWarehousing>().ToCreate(HttpContext);
-
                 var response = _InWarehousingService.AddInWarehousing(modal);
-
-                //异步添加库存
-                //有问题
-
-                // 添加完成后 加入库存表 先判断是否存在（药品id批号 等等） 若存在 则添加数量 不存在则新增 
-
-                var stock = _StockService.InGetInfo((int)response.DrugId,response.BatchNumber);
-                if (stock != null&& stock.Id > 0)
-                {
-                    stock.InventoryQuantity += response.InventoryQuantity;
-                    //修改
-                    _StockService.UpdateStock(stock);
-
-                }
-                else if (stock == null)
-                {
-                    //新增
-                    Stock item = new Stock
-                    {
-                        DrugId = parm.DrugId,
-                        Drugqty = 0,
-                        PurchasePrice = (decimal)(parm.Price==null?0:parm.Price),
-                        RetailPrice = 0,
-                        InventoryQuantity = parm.InventoryQuantity,
-                        DeQuantity = 0,
-                        ActualStock =0,
-                        SUnit = parm.Minunit,
-                        Packqty = (int?)parm.InventoryQuantity,
-                        PackUnit = parm.DrugSpecifications,
-                        BatchON = parm.BatchNumber,
-                        BatchNum = 0,
-                    };
-                    _StockService.AddStock(item);
-                }
+                //// 添加完成后 加入库存表 先判断是否存在（药品id批号 等等） 若存在 则添加数量 不存在则新增 
+                //var stock = _StockService.InGetInfo((int)response.DrugId, response.BatchNumber);
+                //if (stock != null && stock.Id > 0)
+                //{
+                //    stock.InventoryQuantity += response.InventoryQuantity;
+                //    //修改
+                //    _StockService.UpdateStock(stock);
+                //}
+                //else if (stock == null)
+                //{
+                //    //新增
+                //    Stock item = new Stock
+                //    {
+                //        DrugId = parm.DrugId,
+                //        Drugqty = 0,
+                //        PurchasePrice = (decimal)(parm.Price == null ? 0 : parm.Price),
+                //        RetailPrice = 0,
+                //        InventoryQuantity = parm.InventoryQuantity,
+                //        DeQuantity = 0,
+                //        ActualStock = parm.InventoryQuantity,
+                //        SUnit = parm.Minunit,
+                //        Packqty = (int?)parm.InventoryQuantity,
+                //        PackUnit = parm.DrugSpecifications,
+                //        BatchON = parm.BatchNumber,
+                //        BatchNum = 0,
+                //    };
+                //    _StockService.AddStock(item);
+                //}
 
                 //Task.Run(async () =>
                 //{
@@ -210,10 +203,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     Receiptid = modal.ReceiptId,
                     DRUGId = modal.DrugId.ToString(),
                     //CodeId TODO
-                    CodeId =  WarehousingResponse.Id.ToString(),
+                    CodeId = WarehousingResponse.Id.ToString(),
                     Operator = userName,
                     Times = DateTime.Now.ToString("yyyy-MM-dd HH:mm:SS"),
-                    Details = string.Format(@"{0}已入库，溯源码：{1}",modal.DrugName, parmList.TracingSourceCode)
+                    Details = string.Format(@"{0}已入库，溯源码：{1}", modal.DrugName, parmList.TracingSourceCode)
                 });
             });
 
@@ -231,56 +224,43 @@ namespace ZR.Admin.WebApi.Controllers.Business
         public IActionResult UpdateInWarehousing([FromBody] InWarehousingDto parm)
         {
             InWarehousing uf = _InWarehousingService.GetId(parm.Id);
-            if (uf.InventoryQuantity==parm.InventoryQuantity && uf.BatchNumber==parm.BatchNumber&&uf.Price==parm.Price)
+     
+            var x= parm.InventoryQuantity-uf.InventoryQuantity;
+            var modal = parm.Adapt<InWarehousing>().ToUpdate(HttpContext);
+            var response = _InWarehousingService.UpdateInWarehousing(modal);
+            if (response > 0)
             {
-                return SUCCESS(parm);
-            }
-            else
-            {
-                var modal = parm.Adapt<InWarehousing>().ToUpdate(HttpContext);
-                var response = _InWarehousingService.UpdateInWarehousing(modal);
-
-            if (response>0)     
-            {
-              var stock = _StockService.InGetInfo((int)modal.DrugId, modal.BatchNumber);
-            if (stock != null&& stock.Id > 0)
-            {
-                stock.InventoryQuantity += modal.InventoryQuantity;
-                //修改
-                _StockService.UpdateStock(stock);
-
-            }
-            else if (stock==null)
-            {
-                //新增
-                Stock item = new Stock
+                var stock = _StockService.InGetInfo((int)modal.DrugId, modal.BatchNumber);
+                if (stock != null && stock.Id > 0)
                 {
-                    DrugId = parm.DrugId,
-                    
-                    Drugqty = 0,
-                    PurchasePrice = parm.Price == null?0: (decimal)parm.Price,
-                    RetailPrice = 0,
-                    InventoryQuantity = parm.InventoryQuantity,
-                    DeQuantity = 0,
-                    ActualStock = 0,
-                    SUnit = parm.Minunit,
-                    Packqty = (int?)parm.InventoryQuantity,
-                    PackUnit = parm.DrugSpecifications,
-                    BatchON = parm.BatchNumber,
-                    BatchNum = 0,
-                };
-                _StockService.AddStock(item);
-            }
+                    stock.InventoryQuantity += x;
+                    //修改
+                    _StockService.UpdateStock(stock);
+                }
+                else if (stock == null)
+                {
+                    //新增
+                    Stock item = new Stock
+                    {
+                        DrugId = parm.DrugId,
+                        Drugqty = 0,
+                        PurchasePrice = parm.Price == null ? 0 : (decimal)parm.Price,
+                        RetailPrice = 0,
+                        InventoryQuantity = parm.InventoryQuantity,
+                        DeQuantity = 0,
+                        ActualStock = 0,
+                        SUnit = parm.Minunit,
+                        Packqty = (int?)parm.InventoryQuantity,
+                        PackUnit = parm.DrugSpecifications,
+                        BatchON = parm.BatchNumber,
+                        BatchNum = 0,
+                    };
+                    _StockService.AddStock(item);
+                }
 
             }
             return ToResponse(response);
-
-            }
-
-
-
         }
-
         /// <summary>
         /// 删除入库信息
         /// </summary>

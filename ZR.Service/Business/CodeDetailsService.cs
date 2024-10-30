@@ -173,8 +173,7 @@ namespace ZR.Service.Business
                     Code = it.Code,
                     PhysicTypeDesc = it.PhysicTypeDesc,
                     RefEntId = it.RefEntId,
-                    EntName = it.EntName,
-                    // 使用辅助方法获取枚举描述
+                    EntName = it.EntName,                   
                     PackageLevel = it.PackageLevel,
                     PhysicName = it.PhysicName,
                     Exprie = it.Exprie,
@@ -187,6 +186,7 @@ namespace ZR.Service.Business
                     PkgAmount = it.PkgAmount,
                     ExpireDate = it.ExpireDate,
                     BatchNo = it.BatchNo,
+                    InvoiceCode = it.InvoiceCode,
                 }, true)
                 .ToPage(parm);
 

@@ -113,26 +113,25 @@ namespace ZR.Admin.WebApi.Controllers.Business
         //    return SUCCESS(response);
         //}
         /// <summary>
-        /// 添加码信息
+        /// 添加码信息   
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [ActionPermissionFilter(Permission = "codedetails:add")]
         [Log(Title = "码信息", BusinessType = BusinessType.INSERT)]
-        public IActionResult AddCodeDetails([FromBody]List<CodeDetailsDto> parm,string ids)
+        public IActionResult AddCodeDetails([FromBody]List<CodeDetailsDto> parm)
         {
             foreach (var item in parm)
             {
                 var modal = item.Adapt<CodeDetails>().ToCreate(HttpContext);
-                modal.InvoiceCode = _WarehouseReceiptService.GetInfo(int.Parse(ids)).InvoiceNumber;
-                //var info = response.Adapt<WarehouseReceiptDto>();
-
+                modal.InvoiceCode = _WarehouseReceiptService.GetInfo((int)(item.Receiptid)).InvoiceNumber;              
                 var response = _CodeDetailsService.AddCodeDetails(modal);
+                //当执行成功后 去药品表 修改 绑定 ref_code
+
+
+                
             }
-            //var modal = parm.Adapt<CodeDetails>().ToCreate(HttpContext);
-
-            //var response = _CodeDetailsService.AddCodeDetails(modal);
-
+            
             return SUCCESS("true");
         }
 
