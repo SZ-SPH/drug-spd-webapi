@@ -31,6 +31,34 @@ namespace ZR.Model.Business.Dto
 
     }
 
+    //库存对象
+    public class StockVo
+    {
+        public int Id { get; set; }
+        public int? DrugId { get; set; }
+        public string DrugName { get; set; }
+        public int? Drugqty { get; set; }
+        public decimal PurchasePrice { get; set; }
+        public decimal RetailPrice { get; set; }
+        public decimal InventoryQuantity { get; set; }
+        public decimal DeQuantity { get; set; }
+        public decimal ActualStock { get; set; }
+        public string SUnit { get; set; }
+        public int? Packqty { get; set; }
+        public string PackUnit { get; set; }
+        public string BatchON { get; set; }
+        public int? BatchNum { get; set; }
+        public int? WarehouseID { get; set; }
+        //药品通用名称
+        public string DrugMnemonicCode { get; set; }
+        //药品规格
+        public string DrugSpecifications { get; set; }
+        //药品类别
+        public string DrugCategory { get; set; }
+
+    }
+
+
     /// <summary>
     /// 库存输入输出对象
     /// </summary>

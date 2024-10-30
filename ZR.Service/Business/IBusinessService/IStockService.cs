@@ -8,7 +8,7 @@ namespace ZR.Service.Business.IBusinessService
     /// </summary>
     public interface IStockService : IBaseService<Stock>
     {
-        PagedInfo<StockDto> GetList(StockQueryDto parm);
+        PagedInfo<StockVo> GetList(StockQueryDto parm);
         List<PdaStockVo> GetPdaList(StockQueryDto parm);
        List<Stock> AllGetInfo(List<int> parm);  
         Stock GetInfo(int Id);

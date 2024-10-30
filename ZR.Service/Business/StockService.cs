@@ -19,13 +19,51 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<StockDto> GetList(StockQueryDto parm)
+        public PagedInfo<StockVo> GetList(StockQueryDto parm)
         {
-            var predicate = QueryExp(parm);
-
-            var response = Queryable()
+           var predicate = QueryExp(parm);
+           var response =  Context.Queryable<Stock>()
+                .LeftJoin<Drug>((s, d) => s.DrugId == d.DrugId)
                 .Where(predicate.ToExpression())
-                .ToPage<Stock, StockDto>(parm);
+                .GroupBy((s, d) => new
+                {
+                    s.DrugId,
+                    d.DrugName,
+                    s.Drugqty,
+                    s.PurchasePrice,
+                    s.RetailPrice,
+                    s.DeQuantity,
+                    s.ActualStock,
+                    s.SUnit,
+                    s.Packqty,
+                    s.PackUnit,
+                    s.BatchON,
+                    s.BatchNum,
+                    s.WarehouseID,
+                    d.DrugMnemonicCode,
+                    d.DrugSpecifications,
+                    d.DrugCategory
+                })
+                .Select((s, d) => new StockVo {
+                    Id = SqlFunc.AggregateMin(s.Id),
+                    DrugId = s.DrugId,
+                    DrugName = d.DrugName,
+                    Drugqty = s.Drugqty,
+                    PurchasePrice = s.PurchasePrice,
+                    RetailPrice = s.RetailPrice,
+                    InventoryQuantity = SqlFunc.AggregateSum(s.InventoryQuantity),
+                    DeQuantity = s.DeQuantity,
+                    ActualStock = s.ActualStock,
+                    SUnit = s.SUnit,
+                    Packqty = s.Packqty,
+                    PackUnit = s.PackUnit,
+                    BatchON = s.BatchON,
+                    BatchNum = s.BatchNum,
+                    WarehouseID = s.WarehouseID,
+                    DrugMnemonicCode = d.DrugMnemonicCode,
+                    DrugSpecifications = d.DrugSpecifications,
+                    DrugCategory = d.DrugCategory
+                }).ToPageWithOutSort(parm);
 
             return response;
         }
