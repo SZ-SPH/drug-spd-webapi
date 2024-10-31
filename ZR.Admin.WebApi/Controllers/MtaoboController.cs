@@ -174,26 +174,26 @@ namespace ZR.Admin.WebApi.Controllers
                         {
                             for (int k = 0; k < res.Result.ModelList[j].CodeRelationList.Count; k++)
                             {
-                                if (res.Result.ModelList[j].CodeRelationList[k].Code== ModelState[0].Code)
-                                {
-                                    return resultList;
-                                }
-                                if (res.Result.ModelList[j].CodeRelationList[k].CodePackLevel == "2")
-                                {
-                                    //list.Add(res.Result.ModelList[j].CodeRelationList[k].Code);
-                                    var request = new AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest();
-                                    request.RefEntId = Ref_id;
-                                    request.Codes = new List<string> { res.Result.ModelList[j].CodeRelationList[k].Code };
-                                    return MChange(apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request), resultList);
-                                }
-                                else if (res.Result.ModelList[j].CodeRelationList[k].CodePackLevel == "1")
-                                {
+                                //if (res.Result.ModelList[j].CodeRelationList[k].Code== ModelState[0].Code)
+                                //{
+                                //    return resultList;
+                                //}
+                                //if (res.Result.ModelList[j].CodeRelationList[k].CodePackLevel == "2")
+                                //{
+                                //    //list.Add(res.Result.ModelList[j].CodeRelationList[k].Code);
+                                //    var request = new AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest();
+                                //    request.RefEntId = Ref_id;
+                                //    request.Codes = new List<string> { res.Result.ModelList[j].CodeRelationList[k].Code };
+                                //    return MChange(apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request), resultList);
+                                //}
+                                //else if (res.Result.ModelList[j].CodeRelationList[k].CodePackLevel == "1")
+                                //{
                                     Vcodes vcodes = new Vcodes();
                                     vcodes.Code = res.Result.ModelList[j].CodeRelationList[k].Code;
                                     vcodes.PackageLevel = res.Result.ModelList[j].CodeRelationList[k].CodePackLevel;
                                     vcodes.ParentCode= res.Result.ModelList[j].CodeRelationList[k].ParentCode;
                                     resultList.Add(vcodes);
-                                }
+                                //}
                             }
                         }
                     }
