@@ -149,8 +149,7 @@ namespace ZR.Admin.WebApi.Controllers
             public string Code { get; set; }
             public string PackageLevel { get; set; }
             public string ParentCode { get; set; }
-
-
+            public string CodeLevel { get; set; }
         }
 
 
@@ -192,7 +191,9 @@ namespace ZR.Admin.WebApi.Controllers
                                     vcodes.Code = res.Result.ModelList[j].CodeRelationList[k].Code;
                                     vcodes.PackageLevel = res.Result.ModelList[j].CodeRelationList[k].CodePackLevel;
                                     vcodes.ParentCode= res.Result.ModelList[j].CodeRelationList[k].ParentCode;
-                                    resultList.Add(vcodes);
+                                    vcodes.CodeLevel = res.Result.ModelList[j].CodeRelationList[k].CodePackLevel + 1;
+
+                                resultList.Add(vcodes);
                                 //}
                             }
                         }
