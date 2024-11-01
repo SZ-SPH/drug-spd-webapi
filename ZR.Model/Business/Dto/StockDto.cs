@@ -55,6 +55,8 @@ namespace ZR.Model.Business.Dto
         public string DrugSpecifications { get; set; }
         //药品类别
         public string DrugCategory { get; set; }
+        //药品追溯前八位识别码
+        public string RefCode { get; set; }
 
     }
 

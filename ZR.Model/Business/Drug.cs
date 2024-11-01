@@ -85,6 +85,12 @@ namespace ZR.Model.Business
         public int? PackageRatio { get; set; }
 
         /// <summary>
+        /// 药品追溯前八位识别码
+        /// </summary>
+        [SugarColumn(ColumnName = "ref_code")]
+        public string RefCode { get; set; }
+
+        /// <summary>
         /// 包装单位 
         /// </summary>
         [SugarColumn(ColumnName = "package_Unit")]

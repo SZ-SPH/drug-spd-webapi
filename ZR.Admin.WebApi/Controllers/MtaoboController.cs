@@ -15,6 +15,11 @@ using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using Topsdk.Top.Ability2940.Domain;
 using ZR.Service.Business.IBusinessService;
 using Aliyun.OSS;
+using Microsoft.AspNetCore.DataProtection;
+using NETCore.Encrypt.Internal;
+using Org.BouncyCastle.Tls;
+using System;
+using System.Collections.Generic;
 
 namespace ZR.Admin.WebApi.Controllers
 {
@@ -119,7 +124,7 @@ namespace ZR.Admin.WebApi.Controllers
             }
         }
         [HttpGet]
-        public object AllMIXcode(string codes)
+        public IActionResult AllMIXcode(string codes)
         {
             string[] numbers = codes.Split(',');
             List<string> code = new List<string>();
@@ -138,7 +143,21 @@ namespace ZR.Admin.WebApi.Controllers
             var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request);
             var resultList = new List<Vcodes>();
             var f = MChange(response, resultList);
-            return f;
+            return SUCCESS(f);
+        }
+
+        [HttpGet]
+        public IActionResult CodeInOneWay(string codes)
+        {
+            List<string> code = codes.Split(',').ToList();
+            //"ent_id": "00000000000017495183",
+            var request = new AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest();
+            request.RefEntId = (string?)Getentinfo("佛山市南海区第五人民医院(佛山市南海区大沥医院)");
+            request.Codes = code;
+            var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request);
+            var resultList = new List<Vcodes>();
+            var f = MChange(response, resultList);
+            return SUCCESS(f);
         }
 
 
@@ -150,6 +169,34 @@ namespace ZR.Admin.WebApi.Controllers
             public string PackageLevel { get; set; }
             public string ParentCode { get; set; }
             public string CodeLevel { get; set; }
+        }
+
+
+        public object GetSubCodesInfoByCode(AlibabaAlihealthDrugtraceTopYljgQueryCodedetailResponse response)
+        {
+            var isSuccess = response.Result.ResponseSuccess;
+            List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
+            if (isSuccess.GetValueOrDefault())
+            {
+                var models = response.Result.Models;
+                foreach (var item in models)
+                {
+                    Dictionary<string, object> itemDict = new Dictionary<string, object>();
+                    //中码或者大码
+                    if (item.PackageLevel.Equals("2") || item.PackageLevel.Equals("3"))
+                    {
+                        
+                    }
+                    //小码
+                    else
+                    {
+                        itemDict.Add("parent_code", item.Code);
+                        itemDict.Add("pkg_amount", item.CodeProduceInfoDTO.ProduceInfoList[0].PkgAmount);
+                        itemDict.Add("batch_no", item.CodeProduceInfoDTO.ProduceInfoList[0].BatchNo);
+                    }
+                }
+            }
+            return list;
         }
 
 
