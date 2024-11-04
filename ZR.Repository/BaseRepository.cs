@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
 using ZR.Model;
+using ZR.Model.Business;
 
 namespace ZR.Repository
 {
@@ -173,6 +174,7 @@ namespace ZR.Repository
 
         public int Delete(object id, string title = "")
         {
+            Context.Deleteable<StocktakingItem>().Where(it => it.Id == Convert.ToInt64(id)).ExecuteCommand();
             return Context.Deleteable<T>(id).EnableDiffLogEventIF(title.IsNotEmpty(), title).ExecuteCommand();
         }
         public int DeleteTable()

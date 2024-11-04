@@ -31,9 +31,10 @@ namespace ZR.Service.Business
 
         public Drug GetListWithCondition(InWarehousingPdaDto parm)
         {
+            string tracingCodePrefix = parm.TracingSourceCode.Substring(0, 7);
 
             var response = Queryable()
-                .Where(x => x.DrugName.Contains(parm.DrugName))
+                .Where(x => x.RefCode == tracingCodePrefix)
                 .First();
             return response;
         }
