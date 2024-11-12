@@ -64,7 +64,7 @@ namespace ZR.Model.Business
         /// 入库数量
         /// </summary>
         //[SugarColumn(ColumnName = "rECEIPT_ID")]
-        public int? CodeCount { get; set; }
+        public int CodeCount { get; set; }
 
 
         /// <summary>

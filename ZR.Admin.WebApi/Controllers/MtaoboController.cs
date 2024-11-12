@@ -155,8 +155,7 @@ namespace ZR.Admin.WebApi.Controllers
             request.RefEntId = (string?)Getentinfo("佛山市南海区第五人民医院(佛山市南海区大沥医院)");
             request.Codes = code;
             var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request);
-            var resultList = new List<Vcodes>();
-            var f = MChange(response, resultList);
+            var f = GetSubCodesInfoByCode(response);
             return SUCCESS(f);
         }
 
@@ -182,18 +181,39 @@ namespace ZR.Admin.WebApi.Controllers
                 foreach (var item in models)
                 {
                     Dictionary<string, object> itemDict = new Dictionary<string, object>();
+                    var currentProductInfo = item.CodeProduceInfoDTO.ProduceInfoList[0];
+                    //溯源码（父玛）
+                    itemDict.Add("code", item.Code);
+                    //数量
+                    itemDict.Add("pkg_amount", currentProductInfo.PkgAmount);
+                    //批号
+                    itemDict.Add("batch_no", currentProductInfo.BatchNo);
+                    //有效到期
+                    itemDict.Add("exipre_date", currentProductInfo.ExpireDate);
+                    //生产日期
+                    itemDict.Add("produce_date", currentProductInfo.ProduceDateStr);
+                    //有效到
+                    itemDict.Add("expire", item.DrugEntBaseDTO.Exprie);
                     //中码或者大码
                     if (item.PackageLevel.Equals("2") || item.PackageLevel.Equals("3"))
                     {
-                        
+                        AlibabaAlihealthDrugtraceTopYljgQueryRelationResponse relationRes = relation(item.Code);
+                        if(relationRes != null)
+                        {
+                            var codeRelationList = relationRes.Result.ModelList[0].CodeRelationList;
+                            var formatRelationList = codeRelationList.Where(x => x.CodePackLevel == "1").ToList();
+                            itemDict.Add("sub_code", formatRelationList);
+                        }
+                        else if(relationRes == null)
+                        {
+                            string msg = AddOutBill(item.Code);
+                            if (msg == "调用成功")
+                            {
+                                return GetSubCodesInfoByCode(response);
+                            }
+                        }
                     }
-                    //小码
-                    else
-                    {
-                        itemDict.Add("parent_code", item.Code);
-                        itemDict.Add("pkg_amount", item.CodeProduceInfoDTO.ProduceInfoList[0].PkgAmount);
-                        itemDict.Add("batch_no", item.CodeProduceInfoDTO.ProduceInfoList[0].BatchNo);
-                    }
+                    list.Add(itemDict);
                 }
             }
             return list;
@@ -358,7 +378,6 @@ namespace ZR.Admin.WebApi.Controllers
             }
         }
 
-
         [HttpGet]
         public string AddOutBill(string codes)
         {
@@ -371,8 +390,9 @@ namespace ZR.Admin.WebApi.Controllers
             //sourceTracing.BillCode =;
             var request = new AlibabaAlihealthDrugtraceTopYljgUploadinoutbillRequest();
             //"CGRK"+
-            var r =_SourceTracingService.GetSources().Count();
-            string uniqueBillCode = $"BC{DateTime.Now:yyyyMMddHHmmss}_{(r+1):D5}";
+            long snowId = Tools.GenerateSnowCode();
+            //var r =_SourceTracingService.GetSources().Count();
+            string uniqueBillCode = $"BC{snowId}";
             //创建 
             SourceTracing parm =new SourceTracing();
             parm.Codes = codes;
