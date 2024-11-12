@@ -1,15 +1,34 @@
 ﻿using Infrastructure;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Ocsp;
+using Snowflake.Core;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Text.RegularExpressions;
+using Topsdk.Top;
+using Topsdk.Top.Ability2940;
+using Topsdk.Top.Ability2940.Request;
+using Topsdk.Top.Ability2940.Response;
 
 namespace ZR.Common
 {
     public class Tools
     {
+
+        public readonly static string APPKEY = "34712610";
+        public readonly static string APPSECRECT = "d6e1a9eff5cb51c0a2c0044c6a3da96d";
+        public readonly static string URL = "http://gw.api.taobao.com/router/rest";
+
+        public static string Ref_id = "";
+        public static ITopApiClient client = new DefaultTopApiClient(APPKEY, APPSECRECT, URL, 10000, 20000);
+        public static Ability2940 apiPackage = new Ability2940(client);
+
         /// <summary>
         /// 要分割的字符串 eg: 1,3,10,00
         /// </summary>
@@ -167,5 +186,214 @@ namespace ZR.Common
             }
             return s;
         }
+
+        public static object Getentinfo(string rennanem = "")
+        {
+            //ITopApiClient client = new DefaultTopApiClient(APPKEY, APPSECRECT, URL, 10000, 20000);
+            //Ability2940 apiPackage = new Ability2940(client);
+            var request = new AlibabaAlihealthDrugtraceTopYljgQueryGetentinfoRequest();
+            //-- 佛山市南海区第五人民医院(佛山市南海区大沥医院)
+            request.EntName = rennanem;
+            var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryGetentinfo(request);
+            if (response.isSuccess())
+            {
+                return response.Result.Model.RefEntId;
+            }
+            else
+            {
+                return JObject.Parse(response.SubCode).ToString();
+
+            }
+        }
+        /// <summary>
+        /// 获取码信息
+        /// </summary>
+        /// <param name="codes">多个码用逗号拼接的字符串</param>
+        /// <returns></returns>
+        public static AlibabaAlihealthDrugtraceTopYljgQueryCodedetailResponse codedetail(string codes = "")
+        {
+            //ITopApiClient client = new DefaultTopApiClient(APPKEY, APPSECRECT, URL, 10000, 20000);
+            //Ability2940 apiPackage = new Ability2940(client);
+            string[] numbers = codes.Split(',');
+            List<string> code = new List<string>();
+            // 将分隔后的每个字符串添加到列表中
+            foreach (string number in numbers)
+            {
+                code.Add(number);
+            }
+            //"ent_id": "00000000000017495183",
+            var request = new AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest();
+            request.RefEntId = (string?)Getentinfo("佛山市南海区第五人民医院(佛山市南海区大沥医院)");
+            Ref_id = request.RefEntId;
+            //81797370314342290453
+            request.Codes = new List<string>();
+            request.Codes = code;
+            var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request);
+            return response;
+        }
+
+        public static List<Dictionary<string, object>> CodeInOneWay(string codes)
+        {
+            List<string> code = codes.Split(',').ToList();
+            //"ent_id": "00000000000017495183",
+            var request = new AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest();
+            request.RefEntId = (string?)Getentinfo("佛山市南海区第五人民医院(佛山市南海区大沥医院)");
+            request.Codes = code;
+            var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request);
+            var totalResponse = GetSubCodesInfoByCode(response);
+            return totalResponse;
+        }
+
+
+        private static List<Dictionary<string, object>> GetSubCodesInfoByCode(AlibabaAlihealthDrugtraceTopYljgQueryCodedetailResponse response)
+        {
+            var isSuccess = response.Result.ResponseSuccess;
+            List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
+            if (isSuccess.GetValueOrDefault())
+            {
+                var models = response.Result.Models;
+                foreach (var item in models)
+                {
+                    Dictionary<string, object> itemDict = new Dictionary<string, object>();
+                    var currentProductInfo = item.CodeProduceInfoDTO.ProduceInfoList[0];
+                    //溯源码（父玛）
+                    itemDict.Add("code", item.Code);
+                    //数量
+                    itemDict.Add("pkg_amount", currentProductInfo.PkgAmount);
+                    //批号
+                    itemDict.Add("batch_no", currentProductInfo.BatchNo);
+                    //有效到期
+                    itemDict.Add("exipre_date", currentProductInfo.ExpireDate);
+                    //生产日期
+                    itemDict.Add("produce_date", currentProductInfo.ProduceDateStr);
+                    //有效到
+                    itemDict.Add("expire", item.DrugEntBaseDTO.Exprie);
+                    //许可证号
+                    itemDict.Add("license_no", item.DrugEntBaseDTO.ApprovalLicenceNo);
+                    //药品ID
+                    itemDict.Add("drug_ent_base_id", item.DrugEntBaseDTO.DrugEntBaseInfoId);
+                    //企业名称
+                    itemDict.Add("ent_name", item.PUserEntDTO.EntName);
+                    //企业名称
+                    itemDict.Add("ref_ent_id", item.PUserEntDTO.RefEntId);
+                    //药品名称
+                    itemDict.Add("physic_name", item.DrugEntBaseDTO.PhysicName);
+                    //药品类别
+                    itemDict.Add("physic_type_desc", item.DrugEntBaseDTO.PhysicTypeDesc);
+                    //药品类别
+                    itemDict.Add("pkg_spec_crit", item.DrugEntBaseDTO.PkgSpecCrit);
+                    //药品剂型
+                    itemDict.Add("prepn_spec", item.DrugEntBaseDTO.PrepnSpec);
+                    //药品剂型描述
+                    itemDict.Add("prepn_type_spec", item.DrugEntBaseDTO.PrepnTypeDesc);
+
+                    //中码或者大码
+                    if (item.PackageLevel.Equals("2") || item.PackageLevel.Equals("3"))
+                    {
+                        AlibabaAlihealthDrugtraceTopYljgQueryRelationResponse relationRes = relation(item.Code);
+                        if (relationRes != null)
+                        {
+                            var codeRelationList = relationRes.Result.ModelList[0].CodeRelationList;
+                            var formatRelationList = codeRelationList.Where(x => x.CodePackLevel == "1").ToList();
+                            itemDict.Add("sub_code", formatRelationList);
+                        }
+                        else if (relationRes == null)
+                        {
+                            var dict = AddOutBill(item.Code);
+                            var msg = dict.GetValueOrDefault("msg").ToString();
+                            if (msg == "调用成功")
+                            {
+                                return GetSubCodesInfoByCode(response);
+                            }
+                        }
+                    }
+                    list.Add(itemDict);
+                }
+            }
+            return list;
+        }
+       
+        public static AlibabaAlihealthDrugtraceTopYljgQueryRelationResponse relation(string code)
+        {
+            Ref_id = (string?)Getentinfo("佛山市南海区第五人民医院(佛山市南海区大沥医院)");
+
+            var request = new AlibabaAlihealthDrugtraceTopYljgQueryRelationRequest();
+            request.RefEntId = Ref_id;
+            request.Code = code;
+            request.DesRefEntId = Ref_id;
+
+            var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryRelation(request);
+
+            if (response.isSuccess())
+            {
+                return response;
+            }
+            else
+            {
+                return response;
+            }
+        }
+
+
+        public class SourceTracing
+        {
+            public int Id { get; set; }
+            public string BillCode { get; set; }
+            public string Codes { get; set; }
+
+        }
+
+        public static long GenerateSnowCode()
+        {
+            var worker = new IdWorker(2, 8);
+            long id = worker.NextId();
+            return id;
+        }
+
+        public static Dictionary<string, object> AddOutBill(string codes)
+        {
+            Ref_id = (string?)Getentinfo("佛山市南海区第五人民医院(佛山市南海区大沥医院)");
+            SourceTracing sourceTracing = new SourceTracing();
+            sourceTracing.Codes = codes;
+            //sourceTracing.BillCode =;
+            var request = new AlibabaAlihealthDrugtraceTopYljgUploadinoutbillRequest();
+            //"CGRK"+
+            long id = GenerateSnowCode();
+            string uniqueBillCode = $"BC{id}";
+            //创建 
+            SourceTracing parm = new SourceTracing();
+            parm.Codes = codes;
+            parm.BillCode = uniqueBillCode;
+            //var modal = parm.Adapt<SourceTracing>().ToCreate(HttpContext);
+            //var tr = _SourceTracingService.AddSourceTracing(modal);
+            request.BillCode = uniqueBillCode;
+            request.BillTime = DateTime.Now;
+            request.BillType = 102;
+            request.PhysicType = 3;
+            request.RefUserId = Ref_id;
+            //发货企业
+            request.FromUserId = Ref_id;
+            //收货企业
+            request.ToUserId = Ref_id;
+            var cd = new List<string>();
+            request.TraceCodes = cd;
+            cd.Add(codes);
+            request.ClientType = "2";
+
+            var dict = new Dictionary<string, object>();
+            var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgUploadinoutbill(request);
+            if (response.isSuccess())
+            {
+                dict.Add("msg", response.MsgInfo);
+            }
+            else
+            {
+                dict.Add("msg", response.MsgInfo);
+            }
+            dict.Add("bill_code", uniqueBillCode);
+            return dict;
+        }
+
+
     }
 }

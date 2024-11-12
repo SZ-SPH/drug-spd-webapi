@@ -378,7 +378,6 @@ namespace ZR.Admin.WebApi.Controllers
             }
         }
 
-
         [HttpGet]
         public string AddOutBill(string codes)
         {
@@ -391,8 +390,9 @@ namespace ZR.Admin.WebApi.Controllers
             //sourceTracing.BillCode =;
             var request = new AlibabaAlihealthDrugtraceTopYljgUploadinoutbillRequest();
             //"CGRK"+
-            var r =_SourceTracingService.GetSources().Count();
-            string uniqueBillCode = $"BC{DateTime.Now:yyyyMMddHHmmss}_{(r+1):D5}";
+            long snowId = Tools.GenerateSnowCode();
+            //var r =_SourceTracingService.GetSources().Count();
+            string uniqueBillCode = $"BC{snowId}";
             //创建 
             SourceTracing parm =new SourceTracing();
             parm.Codes = codes;

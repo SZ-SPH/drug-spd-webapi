@@ -26,7 +26,7 @@ namespace ZR.Model.Business.Dto
         //[Required(ErrorMessage = "Id不能为空")]
         //[ExcelColumn(Name = "Id")]
         [ExcelColumnName("Id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public int MedicalAdviceId { get; set; }
 
         
@@ -102,7 +102,7 @@ namespace ZR.Model.Business.Dto
         [ExcelColumnName("批次号")]
         public string BatchNo { get; set; }
 
-        public int? InWarehouseId { get; set; }
+        public int InWarehouseId { get; set; }
         public string ParentCode { get; set; }
 
     }

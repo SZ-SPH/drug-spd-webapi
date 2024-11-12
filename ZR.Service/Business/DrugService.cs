@@ -4,6 +4,8 @@ using ZR.Model.Business.Dto;
 using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
+using ZR.Common;
+using Topsdk.Top.Ability2940.Domain;
 
 namespace ZR.Service.Business
 {
@@ -31,8 +33,17 @@ namespace ZR.Service.Business
 
         public Drug GetListWithCondition(InWarehousingPdaDto parm)
         {
-            string tracingCodePrefix = parm.TracingSourceCode.Substring(0, 7);
-
+            string tracingCodePrefix = "";
+            Dictionary<string, object> dict = Tools.CodeInOneWay(parm.TracingSourceCode)[0];
+            if (dict.ContainsKey("sub_code")) 
+            {
+                var value = ( List<AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo>) dict["sub_code"];
+                tracingCodePrefix = value[0].Code;
+            }
+            else
+            {
+                tracingCodePrefix = dict["code"].ToString();
+            }
             var response = Queryable()
                 .Where(x => x.RefCode == tracingCodePrefix)
                 .First();

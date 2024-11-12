@@ -25,7 +25,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
         {
             _CodeDetailsService = CodeDetailsService;
             _WarehouseReceiptService = WarehouseReceiptService;
-
         }
 
         /// <summary>
@@ -132,6 +131,20 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 
             }
             
+            return SUCCESS("true");
+        }
+
+        /// <summary>
+        /// PDA添加码信息
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        [HttpPost("pdaRelateAdd")]
+        [ActionPermissionFilter(Permission = "codedetails:add")]
+        [Log(Title = "PDA添加码信息", BusinessType = BusinessType.INSERT)]
+        public IActionResult PdaAddCodeDetails([FromBody] CodeDetailsDto parm)
+        {
+            _CodeDetailsService.PdaAddCodeDetails(parm);
             return SUCCESS("true");
         }
 

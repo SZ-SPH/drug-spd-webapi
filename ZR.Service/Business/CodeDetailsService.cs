@@ -5,6 +5,12 @@ using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
 using System.ComponentModel;
+using ZR.Common;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Topsdk.Top.Ability2940.Domain;
+using Topsdk.Top.Ability2940.Response;
+using Microsoft.Extensions.Logging;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace ZR.Service.Business
 {
@@ -80,6 +86,136 @@ namespace ZR.Service.Business
         public int UpdateCodeDetails(CodeDetails model)
         {
             return Update(model, true);
+        }
+
+        public void PdaAddCodeDetails(CodeDetailsDto codeDetailsDto)
+        {
+            //溯源码
+            string tracingCode = codeDetailsDto.Code;
+            //根据溯源码获取下面的子码
+            var codeList = Tools.CodeInOneWay(tracingCode);
+            Dictionary<string, object> codeInfoDict = codeList[0];
+            //回补药品的数量，批号和生产日期
+            Context.Updateable<InWarehousing>().SetColumns(it => new InWarehousing
+            {
+                BatchNumber = codeInfoDict["batch_no"].ToString(),
+                Exprie = codeInfoDict["exipre_date"].ToString(),
+                DateOfManufacture = codeInfoDict["produce_date"].ToString(),
+            })
+                .Where(it => it.Id == codeDetailsDto.InWarehouseId)
+                .ExecuteCommand();
+
+            List<int> drugIdList = Context.Queryable<InWarehousing>().Where(it => it.Id == codeDetailsDto.InWarehouseId).Select(it => it.DrugId).ToList();
+
+            var codeDetails = Tools.codedetail(tracingCode);
+
+            string licenseNO = codeInfoDict["license_no"].ToString();
+            string drugEntBaseId = codeInfoDict["drug_ent_base_id"].ToString();
+            string entName = codeInfoDict["ent_name"].ToString();
+            string refEntId = codeInfoDict["ref_ent_id"].ToString();
+            string physicName = codeInfoDict["physic_name"].ToString();
+            string physicTypeDesc = codeInfoDict["physic_type_desc"].ToString();
+            string pkgSpecCrit = codeInfoDict["pkg_spec_crit"].ToString();
+            string prepnSpec = codeInfoDict["prepn_spec"].ToString();
+            string prepnTypeSpec = codeInfoDict["prepn_type_spec"].ToString();
+            //大码中码
+            if (codeInfoDict.ContainsKey("sub_code"))
+            {
+                //码的集合
+                var list = (List<AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo>)codeInfoDict["sub_code"];
+                var CodeDetailList = new List<CodeDetails>();
+                list.ForEach((item) => 
+                {
+                    var CodeDetailItem = new CodeDetails() 
+                    {
+                        Receiptid = codeDetailsDto.Receiptid,
+                        /// 追溯码 
+                        Code = item.Code,
+                        //药品ID
+                        DrugId = drugIdList[0],
+                        ///父码
+                        ParentCode = item.ParentCode,
+                        /// 药品类型描述 
+                        PhysicTypeDesc = codeInfoDict["physic_type_desc"].ToString(),
+                        /// 企业id 
+                        RefEntId = codeInfoDict["ref_ent_id"].ToString(),
+                        /// 企业名称 
+                        EntName = codeInfoDict["ent_name"].ToString(),
+                        /// 药品名称 
+                        PhysicName = codeInfoDict["physic_name"].ToString(),
+                        /// 有效期 
+                        Exprie = codeInfoDict["expire"].ToString(),
+                        /// 药品id
+                        DrugEntBaseInfoId = codeInfoDict["drug_ent_base_id"].ToString(),
+                        /// 批准文号
+                        ApprovalLicenceNo = codeInfoDict["license_no"].ToString(),
+                        /// 包装规格
+                        PkgSpecCrit = codeInfoDict["pkg_spec_crit"].ToString(),
+                        /// 剂型描述 
+                        PrepnSpec = codeInfoDict["prepn_spec"].ToString(),
+                        /// 生产日期 
+                        PrepnTypeDesc = codeInfoDict["prepn_type_spec"].ToString(),
+                        /// 剂型描述 
+                        ProduceDateStr = codeInfoDict["produce_date"].ToString(),
+                        /// 最小包装数量  
+                        PkgAmount = codeInfoDict["pkg_amount"].ToString(),
+                        /// 有效期至 
+                        ExpireDate = codeInfoDict["exipre_date"].ToString(),
+                        /// 批次号 
+                        BatchNo = codeInfoDict["batch_no"].ToString(),
+                        ///入库ID
+                        InWarehouseId = codeDetailsDto.InWarehouseId,
+                        PackageLevel = "1",
+                        MedicalAdviceId = 0,
+                    };
+                    CodeDetailList.Add(CodeDetailItem);
+                });
+                Context.Insertable<CodeDetails>(CodeDetailList).ExecuteCommand();
+            }
+            else
+            {
+                var codeDetailFormat = new CodeDetails
+                {
+
+                    Receiptid = codeDetailsDto.Receiptid,
+                    /// 追溯码 
+                    Code = codeInfoDict["code"].ToString(),
+                    //药品ID
+                    DrugId = drugIdList[0],
+                    /// 药品类型描述 
+                    PhysicTypeDesc = codeInfoDict["physic_type_desc"].ToString(),
+                    /// 企业id 
+                    RefEntId = codeInfoDict["ref_ent_id"].ToString(),
+                    /// 企业名称 
+                    EntName = codeInfoDict["ent_name"].ToString(),
+                    /// 药品名称 
+                    PhysicName = codeInfoDict["physic_name"].ToString(),
+                    /// 有效期 
+                    Exprie = codeInfoDict["expire"].ToString(),
+                    /// 药品id
+                    DrugEntBaseInfoId = codeInfoDict["drug_ent_base_id"].ToString(),
+                    /// 批准文号
+                    ApprovalLicenceNo = codeInfoDict["license_no"].ToString(),
+                    /// 包装规格
+                    PkgSpecCrit = codeInfoDict["pkg_spec_crit"].ToString(),
+                    /// 剂型描述 
+                    PrepnSpec = codeInfoDict["prepn_spec"].ToString(),
+                    /// 生产日期 
+                    PrepnTypeDesc = codeInfoDict["prepn_type_spec"].ToString(),
+                    /// 剂型描述 
+                    ProduceDateStr = codeInfoDict["produce_date"].ToString(),
+                    /// 最小包装数量  
+                    PkgAmount = codeInfoDict["pkg_amount"].ToString(),
+                    /// 有效期至 
+                    ExpireDate = codeInfoDict["exipre_date"].ToString(),
+                    /// 批次号 
+                    BatchNo = codeInfoDict["batch_no"].ToString(),
+                    //入库ID
+                    InWarehouseId = codeDetailsDto.InWarehouseId,
+                    MedicalAdviceId = 0,
+                };
+                Context.Insertable<CodeDetails>(codeDetailFormat).ExecuteCommand();
+            }
         }
 
         public int PdaAdviceDeleteItem(string id)
