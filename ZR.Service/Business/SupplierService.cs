@@ -28,7 +28,20 @@ namespace ZR.Service.Business
 
             return response;
         }
-
+        public List<Supplier> AllGetList(AllSupplierQueryDto parm)
+        {
+            //var predicate = QueryExp(parm);
+            var predicate = Expressionable.Create<Supplier>();
+            predicate = predicate.AndIF(parm.Id != null, it => it.Id == parm.Id);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.SupplierName), it => it.SupplierName.Contains(parm.SupplierName));
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.SocialCreditCode), it => it.SocialCreditCode == parm.SocialCreditCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.EnterpriseAddress), it => it.EnterpriseAddress.Contains(parm.EnterpriseAddress));
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.EnterprisePhone), it => it.EnterprisePhone == parm.EnterprisePhone);
+            //return predicate;
+            var response = Queryable()
+                .Where(predicate.ToExpression()).ToList();
+            return response;
+        }
 
         /// <summary>
         /// 获取详情

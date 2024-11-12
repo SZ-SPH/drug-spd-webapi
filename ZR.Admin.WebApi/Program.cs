@@ -136,7 +136,7 @@ if (builder.Environment.IsProduction())
 app.UseInit();
 
 //使用swagger
-app.UseSwagger();
+//app.UseSwagger();
 //启用客户端IP限制速率
 app.UseIpRateLimiting();
 app.UseRateLimiter();

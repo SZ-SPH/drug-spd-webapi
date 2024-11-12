@@ -11,7 +11,14 @@ namespace ZR.Model.Business.Dto
         public string EnterpriseAddress { get; set; }
         public string EnterprisePhone { get; set; }
     }
-
+    public class AllSupplierQueryDto
+    {
+        public int? Id { get; set; }
+        public string SupplierName { get; set; }
+        public string SocialCreditCode { get; set; }
+        public string EnterpriseAddress { get; set; }
+        public string EnterprisePhone { get; set; }
+    }
     /// <summary>
     /// 供应商基础功能输入输出对象
     /// </summary>

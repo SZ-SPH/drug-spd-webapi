@@ -4,6 +4,7 @@ using ZR.Model.Business;
 using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
+using Microsoft.IdentityModel.Tokens;
 
 //创建时间：2024-08-06
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -20,20 +21,22 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// </summary>
         private readonly ICodeDetailsService _CodeDetailsService;
         private readonly IWarehouseReceiptService _WarehouseReceiptService;
+        private readonly IDrugService _DrugService;
 
-        public CodeDetailsController(ICodeDetailsService CodeDetailsService, IWarehouseReceiptService WarehouseReceiptService)
+
+        public CodeDetailsController(ICodeDetailsService CodeDetailsService, IWarehouseReceiptService WarehouseReceiptService, IDrugService DrugService)
         {
             _CodeDetailsService = CodeDetailsService;
             _WarehouseReceiptService = WarehouseReceiptService;
-
+            _DrugService = DrugService;
         }
 
-        /// <summary>
-        /// 查询码信息列表
-        /// </summary>
-        /// <param name="parm"></param>
-        /// <returns></returns>
-        [HttpGet("list")]
+    /// <summary>
+    /// 查询码信息列表
+    /// </summary>
+    /// <param name="parm"></param>
+    /// <returns></returns>
+    [HttpGet("list")]
         [ActionPermissionFilter(Permission = "codedetails:list")]
         public IActionResult QueryCodeDetails([FromQuery] CodeDetailsQueryDto parm)
         {
@@ -127,11 +130,26 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 modal.InvoiceCode = _WarehouseReceiptService.GetInfo((int)(item.Receiptid)).InvoiceNumber;              
                 var response = _CodeDetailsService.AddCodeDetails(modal);
                 //当执行成功后 去药品表 修改 绑定 ref_code
-
-
-                
-            }
-            
+               if (response != null)
+                {
+                    if (response.PackageLevel == "1" && !string.IsNullOrEmpty(response.ParentCode))
+                    {
+                        //获取药品
+                        int id = (int)response.DrugId;
+                        var drugresponse=_DrugService.GetInfo(id);
+                        if (string.IsNullOrEmpty(drugresponse.RefCode))
+                        {
+                            drugresponse.RefCode = response.Code.Substring(0, 7);                      
+                            var d= drugresponse.Adapt<Drug>().ToUpdate(HttpContext);
+                            var drugrep = _DrugService.UpdateDrug(d);
+                        }
+                        else
+                        {
+                            continue;
+                        }  
+                    }
+                }
+            }            
             return SUCCESS("true");
         }
 
