@@ -9,6 +9,7 @@ namespace ZR.Service.Business.IBusinessService
     public interface ISupplierService : IBaseService<Supplier>
     {
         PagedInfo<SupplierDto> GetList(SupplierQueryDto parm);
+        List<Supplier> AllGetList(AllSupplierQueryDto parm);
 
         Supplier GetInfo(int Id);
 

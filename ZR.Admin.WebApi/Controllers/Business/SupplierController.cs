@@ -38,6 +38,18 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return SUCCESS(response);
         }
 
+        /// <summary>
+        /// 查询供应商基础功能列表
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        [HttpGet("AllList")]
+        [ActionPermissionFilter(Permission = "supplier:list")]
+        public IActionResult AllQuerySupplier([FromQuery] AllSupplierQueryDto parm)
+        {
+            var response = _SupplierService.AllGetList(parm);
+            return SUCCESS(response);
+        }
 
         /// <summary>
         /// 查询供应商基础功能详情
