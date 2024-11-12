@@ -13,5 +13,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Infrastructure\ZR.Infrastructure.csproj" />
+		<ProjectReference Include="..\Topsdk\Topsdk.csproj" />
 	</ItemGroup>
 </Project>

@@ -79,7 +79,7 @@ builder.Services.AddSignalR()
 {
     options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
-builder.Services.AddSwaggerConfig();
+//builder.Services.AddSwaggerConfig();
 // 显示logo
 builder.Services.AddLogo();
 
