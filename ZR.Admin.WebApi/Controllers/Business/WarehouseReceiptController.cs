@@ -138,20 +138,33 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     var codes = await GetDrugTraceCodesAsync(item, parmlist.ReceiptIds[i]);
                     medItem.Drug_Trace_Code = string.Join(",", codes.Select(c => c.Code));
                     medItem.Approval_No = codes.LastOrDefault()?.ApprovalLicenceNo;
-
-                    storageDto.Med_List.Add(medItem);
-                }
-
+                    storageDto.Med_List.Add(medItem);        
+                            }
                 requests.Add(storageDto);
             }
 
             // 调用发送请求的方法
-            string result = await SendRequestsAsync(requests);
+            var apiResponse = await SendRequestsAsync(requests);
 
+            // 处理返回的结果
+            if (apiResponse.Code == "1")
+            {
+                // 处理成功的响应 --状态修改 入库单批量修改状态 为上传成功 否则修改为提示上传失败
+                return SUCCESS(apiResponse.Data);
+            }
+            else
+            {
+                // 处理失败的响应
+                return BadRequest($"请求失败: {apiResponse.Msg}");
+            }
             // 执行修改状态，成功的状态修改为已经推送
-            return SUCCESS(result);
         }
-
+        public class ApiResponse
+        {
+            public string Data { get; set; }
+            public string Code { get; set; }
+            public string Msg { get; set; }
+        }
         private async Task<List<CodeDetails>> GetDrugTraceCodesAsync(InWarehousing item, int receiptId)
         {
             var codeDetailsQuery = new CodeDetailsQueryDto
@@ -164,7 +177,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return  _ICodeDetailsService.AddGetList(codeDetailsQuery);
         }
 
-        private async Task<string> SendRequestsAsync(List<WarehouseStorageRequest> requests)
+        private async Task<ApiResponse> SendRequestsAsync(List<WarehouseStorageRequest> requests)
         {
             using (var client = new HttpClient())
             {
@@ -176,18 +189,22 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
                 HttpResponseMessage response = await client.PostAsync(url, content);
 
+                // 获取响应内容
+                var responseContent = await response.Content.ReadAsStringAsync();
+
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadAsStringAsync();
+                    // 解析 JSON 响应
+                    var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
+                    return apiResponse; // 返回 ApiResponse 对象
                 }
                 else
                 {
                     // 处理错误
-                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}");
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
                 }
             }
         }
-
         //public async Task<IActionResult> SendOutWarehouseReceiptAsync([FromBody] AllList parmlist)
         //{
         //    //从入库单中选出该入库单的药品 同时将该药的溯源码查询出来
