@@ -9,7 +9,9 @@ namespace ZR.Service.Business.IBusinessService
     public interface ICodeDetailsService : IBaseService<CodeDetails>
     {
         PagedInfo<CodeDetailsDto> GetList(CodeDetailsQueryDto parm);
-       List<CodeDetails> outGetList(int MID);
+        List<CodeDetailsDto> AddGetList(CodeDetailsQueryDto parm);
+
+        List<CodeDetails> outGetList(int MID);
 
         CodeDetails GetInfo(int Id);
 
