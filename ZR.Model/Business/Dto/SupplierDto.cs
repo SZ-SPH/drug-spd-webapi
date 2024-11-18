@@ -44,7 +44,7 @@ namespace ZR.Model.Business.Dto
         [ExcelColumn(Name = "企业电话")]
         [ExcelColumnName("企业电话")]
         public string EnterprisePhone { get; set; }
-
+        public string SupplierHisId { get; set; }
 
 
     }

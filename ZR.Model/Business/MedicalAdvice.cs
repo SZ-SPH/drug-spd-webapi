@@ -1,9 +1,7 @@
 namespace ZR.Model.Business
 {
-    /// <summary>
-    /// 医嘱
-    /// </summary>
-    [SugarTable("MEDICAL_ADVICE")]
+
+    [SugarTable("MEDICALADVICE")]
     public class MedicalAdvice
     {
         /// <summary>
@@ -19,12 +17,10 @@ namespace ZR.Model.Business
         public string IpiRegistrationId { get; set; }
 
         /// <summary>
-        /// 药品id 
+        /// 药品id(Hisid) 
         /// </summary>
         [SugarColumn(ColumnName = "dRUG_ID")]
-        public int? DrugId { get; set; }
-
-        public string? DrugName { get; set; }
+        public string DrugId { get; set; }
 
         /// <summary>
         /// 药品数量 
@@ -68,13 +64,36 @@ namespace ZR.Model.Business
         [SugarColumn(ColumnName = "ipi_reaistration_no")]
         public string IpiReaistrationNo { get; set; }
 
-}
+        /// <summary>
+        /// 病患号码 
+        /// </summary>
+        [SugarColumn(ColumnName = "patient_Number")]
+        public string PatientNumber { get; set; }
+
+        /// <summary>
+        /// 发药明细ID 
+        /// </summary>
+        [SugarColumn(ColumnName = "fymx_id")]
+        public string FymxId { get; set; }
+
+        /// <summary>
+        /// 类别 1门诊 2住院 
+        /// </summary>
+        [SugarColumn(ColumnName = "type_code")]
+        public string TypeCode { get; set; }
+
+        /// <summary>
+        /// 票号 
+        /// </summary>
+        public string BillNum { get; set; }
+
+    }
 
     public class MedicalAdviceBind
     {
         public int OrderId { get; set; }
         public string IpiRegistrationId { get; set; }
-        public int? DrugId { get; set; }
+        public string DrugId { get; set; }
         public int? TotalQty { get; set; }
         public int? TrueQty { get; set; }
         public string OrderedDoctorId { get; set; }

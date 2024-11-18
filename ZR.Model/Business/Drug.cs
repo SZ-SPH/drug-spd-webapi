@@ -95,6 +95,48 @@ namespace ZR.Model.Business
         /// </summary>
         [SugarColumn(ColumnName = "package_Unit")]
         public string PackageUnit { get; set; }
+        /// <summary>
+        /// hisid 
+        /// </summary>
+        public string HisID { get; set; }
 
+        /// <summary>
+        /// 价格 
+        /// </summary>
+        public decimal Price { get; set; }
+
+
+        /// <summary>
+        /// 默认货位 
+        /// </summary>
+        public string DefaultLocation { get; set; }
+
+        /// <summary>
+        /// 修改时间 
+        /// </summary>
+        public string ChangeTime { get; set; }
+
+        /// <summary>
+        /// 创建时间 
+        /// </summary>
+        public string CreationTime { get; set; }
+
+        /// <summary>
+        /// HIS价格 
+        /// </summary>
+        [SugarColumn(ColumnName = "hIS_PRICE")]
+        public decimal HisPrice { get; set; }
+
+        /// <summary>
+        /// 库房禁用 
+        /// </summary>
+        [SugarColumn(ColumnName = "kF_ENABLE")]
+        public string KfEnable { get; set; }
+
+        /// <summary>
+        /// 药房禁用 
+        /// </summary>
+        [SugarColumn(ColumnName = "yF_ENABLE")]
+        public string YfEnable { get; set; }
     }
 }

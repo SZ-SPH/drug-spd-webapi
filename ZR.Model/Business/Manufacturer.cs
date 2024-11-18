@@ -22,6 +22,9 @@ namespace ZR.Model.Business
         /// 编号 
         /// </summary>
         public string Code { get; set; }
-
+        /// <summary>
+        /// HIS ID 
+        /// </summary>
+        public string HisId { get; set; }
     }
 }

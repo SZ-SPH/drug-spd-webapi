@@ -33,8 +33,9 @@ namespace ZR.Admin.WebApi.Controllers.Business
             _CodeDetailsService = CodeDetailsService;
         }
 
+
         /// <summary>
-        /// 查询医嘱列表
+        /// 查询医嘱信息列表
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
@@ -46,22 +47,9 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return SUCCESS(response);
         }
 
-        /// <summary>
-        /// PDA根据HIS医嘱查询医嘱列表
-        /// </summary>
-        /// <param name="parm"></param>
-        /// <returns></returns>
-        [HttpGet("PDAList")]
-        [ActionPermissionFilter(Permission = "medicaladvice:list")]
-        public IActionResult PdaQueryMedicalAdviceByHisId([FromQuery] MedicalAdviceQueryDto parm)
-        {
-            var response = _MedicalAdviceService.PdaQueryMedicalAdviceByHisId(parm);
-            return SUCCESS(response);
-        }
-
 
         /// <summary>
-        /// 查询医嘱详情
+        /// 查询医嘱信息详情
         /// </summary>
         /// <param name="OrderId"></param>
         /// <returns></returns>
@@ -76,12 +64,12 @@ namespace ZR.Admin.WebApi.Controllers.Business
         }
 
         /// <summary>
-        /// 添加医嘱
+        /// 添加医嘱信息
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [ActionPermissionFilter(Permission = "medicaladvice:add")]
-        [Log(Title = "医嘱", BusinessType = BusinessType.INSERT)]
+        [Log(Title = "医嘱信息", BusinessType = BusinessType.INSERT)]
         public IActionResult AddMedicalAdvice([FromBody] MedicalAdviceDto parm)
         {
             var modal = parm.Adapt<MedicalAdvice>().ToCreate(HttpContext);
@@ -92,12 +80,12 @@ namespace ZR.Admin.WebApi.Controllers.Business
         }
 
         /// <summary>
-        /// 更新医嘱
+        /// 更新医嘱信息
         /// </summary>
         /// <returns></returns>
         [HttpPut]
         [ActionPermissionFilter(Permission = "medicaladvice:edit")]
-        [Log(Title = "医嘱", BusinessType = BusinessType.UPDATE)]
+        [Log(Title = "医嘱信息", BusinessType = BusinessType.UPDATE)]
         public IActionResult UpdateMedicalAdvice([FromBody] MedicalAdviceDto parm)
         {
             var modal = parm.Adapt<MedicalAdvice>().ToUpdate(HttpContext);
@@ -107,24 +95,24 @@ namespace ZR.Admin.WebApi.Controllers.Business
         }
 
         /// <summary>
-        /// 删除医嘱
+        /// 删除医嘱信息
         /// </summary>
         /// <returns></returns>
         [HttpDelete("delete/{ids}")]
         [ActionPermissionFilter(Permission = "medicaladvice:delete")]
-        [Log(Title = "医嘱", BusinessType = BusinessType.DELETE)]
+        [Log(Title = "医嘱信息", BusinessType = BusinessType.DELETE)]
         public IActionResult DeleteMedicalAdvice([FromRoute] string ids)
         {
             var idArr = Tools.SplitAndConvert<int>(ids);
 
-            return ToResponse(_MedicalAdviceService.Delete(idArr, "删除医嘱"));
+            return ToResponse(_MedicalAdviceService.Delete(idArr));
         }
 
         /// <summary>
-        /// 导出医嘱
+        /// 导出医嘱信息
         /// </summary>
         /// <returns></returns>
-        [Log(Title = "医嘱", BusinessType = BusinessType.EXPORT, IsSaveResponseData = false)]
+        [Log(Title = "医嘱信息", BusinessType = BusinessType.EXPORT, IsSaveResponseData = false)]
         [HttpGet("export")]
         [ActionPermissionFilter(Permission = "medicaladvice:export")]
         public IActionResult Export([FromQuery] MedicalAdviceQueryDto parm)
@@ -136,15 +124,15 @@ namespace ZR.Admin.WebApi.Controllers.Business
             {
                 return ToResponse(ResultCode.FAIL, "没有要导出的数据");
             }
-            var result = ExportExcelMini(list, "医嘱", "医嘱");
+            var result = ExportExcelMini(list, "医嘱信息", "医嘱信息");
             return ExportExcel(result.Item2, result.Item1);
         }
 
         /// <summary>
-        /// 清空医嘱
+        /// 清空医嘱信息
         /// </summary>
         /// <returns></returns>
-        [Log(Title = "医嘱", BusinessType = BusinessType.CLEAN)]
+        [Log(Title = "医嘱信息", BusinessType = BusinessType.CLEAN)]
         [ActionPermissionFilter(Permission = "medicaladvice:delete")]
         [HttpDelete("clean")]
         public IActionResult Clear()
@@ -162,7 +150,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// <param name="formFile"></param>
         /// <returns></returns>
         [HttpPost("importData")]
-        [Log(Title = "医嘱导入", BusinessType = BusinessType.IMPORT, IsSaveRequestData = false)]
+        [Log(Title = "医嘱信息导入", BusinessType = BusinessType.IMPORT, IsSaveRequestData = false)]
         [ActionPermissionFilter(Permission = "medicaladvice:import")]
         public IActionResult ImportData([FromForm(Name = "file")] IFormFile formFile)
         {
@@ -176,17 +164,36 @@ namespace ZR.Admin.WebApi.Controllers.Business
         }
 
         /// <summary>
-        /// 医嘱导入模板下载
+        /// 医嘱信息导入模板下载
         /// </summary>
         /// <returns></returns>
         [HttpGet("importTemplate")]
-        [Log(Title = "医嘱模板", BusinessType = BusinessType.EXPORT, IsSaveResponseData = false)]
+        [Log(Title = "医嘱信息模板", BusinessType = BusinessType.EXPORT, IsSaveResponseData = false)]
         [AllowAnonymous]
         public IActionResult ImportTemplateExcel()
         {
             var result = DownloadImportTemplate(new List<MedicalAdviceDto>() { }, "MedicalAdvice");
             return ExportExcel(result.Item2, result.Item1);
         }
+
+  
+
+        /// <summary>
+        /// PDA根据HIS医嘱查询医嘱列表
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        [HttpGet("PDAList")]
+        [ActionPermissionFilter(Permission = "medicaladvice:list")]
+        public IActionResult PdaQueryMedicalAdviceByHisId([FromQuery] MedicalAdviceQueryDto parm)
+        {
+            var response = _MedicalAdviceService.PdaQueryMedicalAdviceByHisId(parm);
+            return SUCCESS(response);
+        }
+
+
+
+
 
 
 

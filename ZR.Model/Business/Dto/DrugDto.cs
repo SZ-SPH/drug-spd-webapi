@@ -72,7 +72,23 @@ namespace ZR.Model.Business.Dto
         [ExcelColumnName("包装单位")]
         public string PackageUnit { get; set; }
 
+        public string HisID { get; set; }
 
+        public decimal Price { get; set; }
+
+        public string RefCode { get; set; }
+
+        public string DefaultLocation { get; set; }
+
+        public string ChangeTime { get; set; }
+
+        public string CreationTime { get; set; }
+
+        public decimal HisPrice { get; set; }
+
+        public string KfEnable { get; set; }
+
+        public string YfEnable { get; set; }
 
     }
 }

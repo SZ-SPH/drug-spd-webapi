@@ -26,7 +26,7 @@ namespace ZR.Service.Business
 
             parm.Sort = "";
             var response = Context.Queryable<MedicalAdvice>()
-                .LeftJoin<Drug>((it,d) => it.DrugId == d.DrugId)
+                .LeftJoin<Drug>((it,d) => it.DrugId == d.HisID)
                 .OrderBy((it) => it.OrderId)
                 .Where(predicate.ToExpression())
                 .Select((it,d) => new MedicalAdvice
@@ -38,7 +38,7 @@ namespace ZR.Service.Business
                     EmployeeName = it.EmployeeName,
                     OrderedDoctorId = it.OrderedDoctorId,
                     TotalQty = it.TotalQty,
-                    DrugName = d.DrugName,
+                    //DrugName = d.DrugName,
                     DrugId = it.DrugId,
                     IpiRegistrationId = it.IpiRegistrationId,
                     OrderId = it.OrderId
@@ -51,7 +51,7 @@ namespace ZR.Service.Business
         public List<MedicalAdviceBind> PdaQueryMedicalAdviceByHisId(MedicalAdviceQueryDto parm)
         {
             var response = Context.Queryable<MedicalAdvice>()
-                .LeftJoin<Drug>((o, cus) => o.DrugId == cus.DrugId)
+                .LeftJoin<Drug>((o, cus) => o.DrugId == cus.HisID)
                 .LeftJoin<CodeDetails>((o,cus,cd) => o.OrderId == cd.MedicalAdviceId)
                 .Where(o => o.AssignDrugSeq == parm.AssignDrugSeq)
                 .GroupBy((o, cus, cd) => new
@@ -205,6 +205,14 @@ namespace ZR.Service.Business
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.EmployeeName), it => it.EmployeeName == parm.EmployeeName);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DepartmentChineseName), it => it.DepartmentChineseName == parm.DepartmentChineseName);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.IpiReaistrationNo), it => it.IpiReaistrationNo == parm.IpiReaistrationNo);
+
+
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.OrderedDoctorId), it => it.OrderedDoctorId == parm.OrderedDoctorId);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.OrderedDeptId), it => it.OrderedDeptId == parm.OrderedDeptId);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.PatientNumber), it => it.PatientNumber == parm.PatientNumber);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.FymxId), it => it.FymxId == parm.FymxId);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TypeCode), it => it.TypeCode == parm.TypeCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.BillNum), it => it.BillNum == parm.BillNum);
             return predicate;
         }
     }

@@ -1,7 +1,8 @@
+
 namespace ZR.Model.Business
 {
     /// <summary>
-    /// 供应商基础功能
+    /// 
     /// </summary>
     [SugarTable("SUPPLIER")]
     public class Supplier
@@ -9,7 +10,7 @@ namespace ZR.Model.Business
         /// <summary>
         /// id 
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int Id { get; set; }
 
         /// <summary>
@@ -35,6 +36,12 @@ namespace ZR.Model.Business
         /// </summary>
         [SugarColumn(ColumnName = "eNTERPRISE_PHONE")]
         public string EnterprisePhone { get; set; }
+
+        /// <summary>
+        /// 供应商HIS ID 
+        /// </summary>
+        [SugarColumn(ColumnName = "sUPPLIER_HIS_ID")]
+        public string SupplierHisId { get; set; }
 
     }
 }

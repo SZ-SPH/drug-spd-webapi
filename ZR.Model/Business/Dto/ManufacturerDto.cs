@@ -29,6 +29,6 @@ namespace ZR.Model.Business.Dto
         public string Code { get; set; }
 
 
-
+        public string HisId { get; set; }
     }
 }
