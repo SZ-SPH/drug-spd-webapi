@@ -9,7 +9,7 @@ namespace ZR.Model.Business
         /// <summary>
         /// id 
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int Id { get; set; }
 
         /// <summary>

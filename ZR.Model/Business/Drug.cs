@@ -10,7 +10,7 @@ namespace ZR.Model.Business
         /// <summary>
         /// id 
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = false, ColumnName = "dRUG_ID")]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true, ColumnName = "dRUG_ID")]
         public int DrugId { get; set; }
 
         /// <summary>

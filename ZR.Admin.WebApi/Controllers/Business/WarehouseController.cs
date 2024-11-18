@@ -11,7 +11,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
     /// <summary>
     /// 仓库
     /// </summary>
-    [Verify]
+    //[Verify]
+    [AllowAnonymous]
     [Route("business/Warehouse")]
     public class WarehouseController : BaseController
     {

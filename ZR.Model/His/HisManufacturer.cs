@@ -8,7 +8,7 @@ namespace ZR.Model.His
 {
 
     [Tenant(1)]
-    [SugarTable("xthis_nhqdwrmyy.V_XYXT_DRM_MANUFACTURER ")]
+    [SugarTable("xthis_nhqdwrmyy.V_XYXT_DRM_MANUFACTURER")]
     public class HisManufacturer
     {
         //public string br_id { get; set; }

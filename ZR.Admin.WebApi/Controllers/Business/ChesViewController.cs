@@ -37,6 +37,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
         public IActionResult QueryChesView([FromQuery] ChesViewQueryDto parm)
         {
             var response = _ChesViewService.GetList(parm);
+            var s = _ChesViewService.GetAll();
+
             return SUCCESS(response);
         }
 

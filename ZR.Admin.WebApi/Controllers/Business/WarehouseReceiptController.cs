@@ -150,6 +150,16 @@ namespace ZR.Admin.WebApi.Controllers.Business
             if (apiResponse.Code == "1")
             {
                 // 处理成功的响应 --状态修改 入库单批量修改状态 为上传成功 否则修改为提示上传失败
+                for (int i = 0; i < parmlist.ReceiptIds.Count; i++)
+                {
+                    var ws= _WarehouseReceiptService.GetId(parmlist.ReceiptIds[i]);
+                    ws.State = "已上传";
+                    var modal = ws.Adapt<WarehouseReceipt>().ToUpdate(HttpContext);
+                    var response = _WarehouseReceiptService.UpdateWarehouseReceipt(modal);                   
+                }
+
+
+
                 return SUCCESS(apiResponse.Data);
             }
             else

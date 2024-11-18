@@ -21,6 +21,7 @@ namespace ZR.Model.His
         public string EMPLOYEE_NAME { get; set; }
         public string FYMX_ID { get; set; }
         public string TYPE_CODE { get; set; }
+        public int Total_qty { get; set; }
 
         //public string br_id { get; set; }
         //public string br_hm { get; set; }

@@ -7,7 +7,7 @@ namespace ZR.Model.Business
         /// <summary>
         /// id 
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = false, ColumnName = "oRDER_ID")]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true, ColumnName = "oRDER_ID")]
         public int OrderId { get; set; }
 
         /// <summary>

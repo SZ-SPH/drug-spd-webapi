@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ZR.Model.His
 {
     [Tenant(1)]
-    [SugarTable("xthis_nhqdwrmyy.V_XYXT_WAREHOUSE_DICTY")]
+    [SugarTable("xthis_nhqdwrmyy.V_XYXT_WAREHOUSE_DICT")]
     public class HisWarehouse
     {
 
