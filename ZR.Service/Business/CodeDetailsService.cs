@@ -330,14 +330,15 @@ namespace ZR.Service.Business
         }
 
 
-        public List<CodeDetailsDto> AddGetList(CodeDetailsQueryDto parm)
+        public List<CodeDetails> AddGetList(CodeDetailsQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
-                .Where(predicate.ToExpression());
+                .Where(predicate.ToExpression())
+                .ToList();
 
-            return (List<CodeDetailsDto>)response;
+            return response;
         }
 
 

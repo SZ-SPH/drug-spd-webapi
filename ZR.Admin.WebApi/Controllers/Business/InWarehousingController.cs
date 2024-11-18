@@ -178,7 +178,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 PhysicTypeDesc = parmList.DrugCategory,
                 RefEntId = parmList.ProduceId,
                 EntName = parmList.ProduceName,
-                PackageLevel = parmList.DrugClassification == "1" ? "小码" : parmList.DrugClassification == "2" ? "中码" : parmList.DrugClassification == "3" ? "大码" : parmList.DrugClassification,
+                PackageLevel = parmList.DrugClassification,
                 PhysicName = parmList.DrugName,
                 Exprie = parmList.Expire,
                 ExpireDate = parmList.ExpireDate,
@@ -210,6 +210,32 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 });
             });
 
+            return SUCCESS("处理成功");
+        }
+
+
+        [HttpPost("AllAddPda")]
+        [ActionPermissionFilter(Permission = "inwarehousing:add")]
+        [Log(Title = "入库信息PDA", BusinessType = BusinessType.INSERT)]
+        public IActionResult AddAllInWarehousingWithPda([FromBody] InWarehousingPdaDto parmList)
+        {
+            var inWarehousing = parmList.Adapt<InWarehousing>().ToCreate(HttpContext);
+            var modal = parmList.Adapt<InWarehousingPdaDto>().ToCreate(HttpContext);
+            Drug drug = _DrugService.GetListWithCondition(parmList);
+            List<Dictionary<string, object>> list = Tools.CodeInOneWay(parmList.TracingSourceCode);
+            inWarehousing.DrugId = drug.DrugId;
+            inWarehousing.DrugCode = drug.DrugCode;
+            inWarehousing.DrugSpecifications = drug.DrugSpecifications;
+            inWarehousing.InventoryQuantity = 1;
+            inWarehousing.BatchNumber = list[0]["batch_no"].ToString();
+            var WarehousingResponse = _InWarehousingService.AddInWarehousingWithCondition(inWarehousing);
+            var pdaCodeDetials = new CodeDetailsDto()
+            {
+                Code = parmList.TracingSourceCode,
+                InWarehouseId = WarehousingResponse.Id,
+                Receiptid = int.Parse(modal.ReceiptId),
+            };
+            _CodeDetailsService.PdaAddCodeDetails(pdaCodeDetials);
             return SUCCESS("处理成功");
         }
 

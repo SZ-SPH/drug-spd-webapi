@@ -63,7 +63,7 @@ namespace ZR.Service.Business
         /// <returns></returns>
         public InWarehousing AddInWarehousingWithCondition(InWarehousing parm)
         {
-            var inWarehousing = Queryable().Where(x => x.DrugCode == parm.DrugCode && x.ReceiptId==parm.ReceiptId).First();
+            var inWarehousing = Queryable().Where(x => x.DrugCode == parm.DrugCode && x.BatchNumber == parm.BatchNumber && x.ReceiptId == parm.ReceiptId).First();
             //不为空，说明已有该药品，则将药品数量加1
             if(inWarehousing != null)
             {

@@ -38,11 +38,11 @@ namespace ZR.Service.Business
             if (dict.ContainsKey("sub_code")) 
             {
                 var value = ( List<AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo>) dict["sub_code"];
-                tracingCodePrefix = value[0].Code;
+                tracingCodePrefix = value.Where(x => x.CodePackLevel == "1").First().Code.Substring(0, 7);
             }
             else
             {
-                tracingCodePrefix = dict["code"].ToString();
+                tracingCodePrefix = dict["code"].ToString().Substring(0,7);
             }
             var response = Queryable()
                 .Where(x => x.RefCode == tracingCodePrefix)

@@ -115,7 +115,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 var storageDto = new WarehouseStorageRequest
                 {
                     Warehouse_Code = parmlist.Warehousecode,
-                    Org_Id = parmlist.org_id,
+                    Org_Id = string.IsNullOrEmpty(parmlist.org_id) ? "RSS20171211000000001" : parmlist.org_id,
                     Med_List = new List<MedItem>()
                 };
 
@@ -152,7 +152,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return SUCCESS(result);
         }
 
-        private async Task<List<CodeDetailsDto>> GetDrugTraceCodesAsync(InWarehousing item, int receiptId)
+        private async Task<List<CodeDetails>> GetDrugTraceCodesAsync(InWarehousing item, int receiptId)
         {
             var codeDetailsQuery = new CodeDetailsQueryDto
             {
