@@ -222,6 +222,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
             var inWarehousing = parmList.Adapt<InWarehousing>().ToCreate(HttpContext);
             var modal = parmList.Adapt<InWarehousingPdaDto>().ToCreate(HttpContext);
             Drug drug = _DrugService.GetListWithCondition(parmList);
+            if(drug == null)
+            {
+                return ToResponse(ResultCode.FAIL, "药品未绑定，请前往PC端绑定！");
+            }
             List<Dictionary<string, object>> list = Tools.CodeInOneWay(parmList.TracingSourceCode);
             inWarehousing.DrugId = drug.DrugId;
             inWarehousing.DrugCode = drug.DrugCode;
