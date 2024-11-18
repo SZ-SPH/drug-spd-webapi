@@ -1,11 +1,11 @@
 ﻿using Infrastructure.Attribute;
 using Infrastructure.Extensions;
-using ZR.Model.Business.Dto;
-using ZR.Model.Business;
+using ZR.Model.His.Dto;
 using ZR.Repository;
-using ZR.Service.Business.IBusinessService;
+using ZR.Model.His;
+using ZR.Service.His.IHisService;
 
-namespace ZR.Service.Business
+namespace ZR.Service.His
 {
     /// <summary>
     /// 药品基础资料管理Service业务层处理

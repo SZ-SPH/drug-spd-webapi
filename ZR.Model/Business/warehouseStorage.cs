@@ -14,6 +14,10 @@ namespace ZR.Model.Business
         public string Indate { get; set; }
         public string Prod_Date { get; set; }
         public string Manufacturer_Id { get; set; }
+        public string Price { get; set; }
+        public string Approval_No { get; set; }
+        public string Drug_Trace_Code { get; set; }
+
     }
 
     public class WarehouseStorageRequest

@@ -26,14 +26,16 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// </summary>
         private readonly IInWarehousingService _InWarehousingService;
         private readonly IWarehouseReceiptService _WarehouseReceiptService;
+        private readonly ICodeDetailsService _ICodeDetailsService;
+
 
         public WarehouseReceiptController(IWarehouseReceiptService WarehouseReceiptService
-            ,IInWarehousingService InWarehousingService
+            ,IInWarehousingService InWarehousingService,ICodeDetailsService CodeDetailsService
             )
         {
             _WarehouseReceiptService = WarehouseReceiptService;
             _InWarehousingService = InWarehousingService;
-
+            _ICodeDetailsService = CodeDetailsService;
 
         }
 
@@ -110,60 +112,70 @@ namespace ZR.Admin.WebApi.Controllers.Business
             List<WarehouseStorageRequest> requests = new List<WarehouseStorageRequest>();
             for (int i = 0; i < parmlist.ReceiptIds.Count; i++)
             {
-                WarehouseStorageRequest storageDto = new WarehouseStorageRequest();
-                storageDto.Warehouse_Code = parmlist.Warehousecode;
-                storageDto.Org_Id = parmlist.org_id;
-                //查询 入库单明细
-                var response = _InWarehousingService.inGetList(parmlist.ReceiptIds[i]);
-                List<MedItem> items = new List<MedItem>();
-                for (int j = 0; j < response.Count; j++)
+                var storageDto = new WarehouseStorageRequest
                 {
-                    MedItem medItem = new MedItem();
-                    medItem.Drug_Id = response[i].DrugId.ToString();
-                    medItem.Qty = response[i].InventoryQuantity.ToString();
-                    medItem.Batch_No = response[j].BatchNumber != null ? response[j].BatchNumber.ToString() : null;
-                    medItem.Indate = response[j].BatchNumber != null ? response[j].BatchNumber.ToString() : null;
-                    medItem.Prod_Date = response[j].BatchNumber != null ? response[j].BatchNumber.ToString() : null;
-                    medItem.Manufacturer_Id = "";
-                    items.Add(medItem);
+                    Warehouse_Code = parmlist.Warehousecode,
+                    Org_Id = parmlist.org_id,
+                    Med_List = new List<MedItem>()
+                };
+
+                // 查询入库单明细
+                var response = _InWarehousingService.inGetList(parmlist.ReceiptIds[i]);
+                foreach (var item in response)
+                {
+                    var medItem = new MedItem
+                    {
+                        Drug_Id = item.DrugId.ToString(),
+                        Qty = item.InventoryQuantity.ToString(),
+                        Batch_No = item.BatchNumber,
+                        Indate = item.Exprie?.ToString(),
+                        Prod_Date = item.DateOfManufacture?.ToString(),
+                        Manufacturer_Id = item.ManufacturerId?.ToString(),
+                        Price = item.Price?.ToString()
+                    };
+
+                    // 获取溯源码
+                    var codes = await GetDrugTraceCodesAsync(item, parmlist.ReceiptIds[i]);
+                    medItem.Drug_Trace_Code = string.Join(",", codes.Select(c => c.Code));
+                    medItem.Approval_No = codes.LastOrDefault()?.ApprovalLicenceNo;
+
+                    storageDto.Med_List.Add(medItem);
                 }
-                storageDto.Med_List = items;
-                requests.Add(storageDto);         
-                //http://127.0.0.1:8080/xtHisService/xyxtSendAction!warehouseStorage.do
-           
+
+                requests.Add(storageDto);
             }
+
             // 调用发送请求的方法
             string result = await SendRequestsAsync(requests);
 
-            //执行修改状态 成功的状态修改为已经推送
-
-
-
-            return SUCCESS("result");
-
-
+            // 执行修改状态，成功的状态修改为已经推送
+            return SUCCESS(result);
         }
 
+        private async Task<List<CodeDetailsDto>> GetDrugTraceCodesAsync(InWarehousing item, int receiptId)
+        {
+            var codeDetailsQuery = new CodeDetailsQueryDto
+            {
+                DrugId = item.DrugId,
+                Receiptid = receiptId,
+                InWarehouseId = item.Id
+            };
 
-
+            return  _ICodeDetailsService.AddGetList(codeDetailsQuery);
+        }
 
         private async Task<string> SendRequestsAsync(List<WarehouseStorageRequest> requests)
         {
-            using (HttpClient client = new HttpClient())
+            using (var client = new HttpClient())
             {
-                // 设置请求的URL
                 string url = "http://127.0.0.1:8080/xtHisService/xyxtSendAction!warehouseStorage.do";
 
                 // 将 requests 转换为 JSON 字符串
-                string json = JsonConvert.SerializeObject(requests); // 或者使用 System.Text.Json.JsonSerializer.Serialize(requests)
-
-                // 创建 HttpContent
+                var json = JsonConvert.SerializeObject(requests);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // 发送 POST 请求
                 HttpResponseMessage response = await client.PostAsync(url, content);
 
-                // 检查响应
                 if (response.IsSuccessStatusCode)
                 {
                     return await response.Content.ReadAsStringAsync();
@@ -175,6 +187,97 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 }
             }
         }
+
+        //public async Task<IActionResult> SendOutWarehouseReceiptAsync([FromBody] AllList parmlist)
+        //{
+        //    //从入库单中选出该入库单的药品 同时将该药的溯源码查询出来
+        //    List<WarehouseStorageRequest> requests = new List<WarehouseStorageRequest>();
+        //    for (int i = 0; i < parmlist.ReceiptIds.Count; i++)
+        //    {
+        //        WarehouseStorageRequest storageDto = new WarehouseStorageRequest();
+        //        storageDto.Warehouse_Code = parmlist.Warehousecode;
+        //        storageDto.Org_Id = parmlist.org_id;
+        //        //查询 入库单明细
+        //        var response = _InWarehousingService.inGetList(parmlist.ReceiptIds[i]);
+        //        List<MedItem> items = new List<MedItem>();
+        //        for (int j = 0; j < response.Count; j++)
+        //        {
+        //            MedItem medItem = new MedItem();
+        //            medItem.Drug_Id = response[i].DrugId.ToString();
+        //            medItem.Qty = response[i].InventoryQuantity.ToString();
+        //            medItem.Batch_No = response[j].BatchNumber != null ? response[j].BatchNumber.ToString() : null;
+        //            medItem.Indate = response[j].Exprie != null ? response[j].Exprie.ToString() : null;
+        //            medItem.Prod_Date = response[j].DateOfManufacture != null ? response[j].DateOfManufacture.ToString() : null;
+        //            medItem.Manufacturer_Id = response[j].ManufacturerId != null ? response[j].ManufacturerId.ToString() : null;
+        //            medItem.Price = response[j].Price != null ? response[j].Price.ToString() : null;
+        //            medItem.Drug_Trace_Code = response[j].ManufacturerId != null ? response[j].ManufacturerId.ToString() : null;
+        //            CodeDetailsQueryDto codeDetailsQuery = new CodeDetailsQueryDto();
+        //            codeDetailsQuery.DrugId = response[i].DrugId;
+        //            codeDetailsQuery.Receiptid = parmlist.ReceiptIds[i];
+        //            codeDetailsQuery.InWarehouseId = response[i].Id;
+        //            var codes= _ICodeDetailsService.AddGetList(codeDetailsQuery);
+        //            string appno = "";
+        //            for (int k = 0; k < codes.Count; k++)
+        //            {
+        //                if (k==codes.Count-1)
+        //                {
+        //                    medItem.Drug_Trace_Code += codes[k].Code;
+        //                    appno= codes[k].ApprovalLicenceNo;
+        //                }
+        //                else
+        //                {
+        //                    medItem.Drug_Trace_Code += codes[k].Code+",";
+        //                }
+        //            }
+
+
+
+        //            medItem.Approval_No = appno;
+
+        //            items.Add(medItem);
+        //        }
+        //        storageDto.Med_List = items;
+        //        requests.Add(storageDto);                    
+        //    }
+        //    // 调用发送请求的方法
+        //    string result = await SendRequestsAsync(requests);
+
+        //    //执行修改状态 成功的状态修改为已经推送
+        //    return SUCCESS("result");
+
+        //}
+
+
+
+
+        //private async Task<string> SendRequestsAsync(List<WarehouseStorageRequest> requests)
+        //{
+        //    using (HttpClient client = new HttpClient())
+        //    {
+        //        // 设置请求的URL
+        //        string url = "http://127.0.0.1:8080/xtHisService/xyxtSendAction!warehouseStorage.do";
+
+        //        // 将 requests 转换为 JSON 字符串
+        //        string json = JsonConvert.SerializeObject(requests); // 或者使用 System.Text.Json.JsonSerializer.Serialize(requests)
+
+        //        // 创建 HttpContent
+        //        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        //        // 发送 POST 请求
+        //        HttpResponseMessage response = await client.PostAsync(url, content);
+
+        //        // 检查响应
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            return await response.Content.ReadAsStringAsync();
+        //        }
+        //        else
+        //        {
+        //            // 处理错误
+        //            throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}");
+        //        }
+        //    }
+        //}
         /// <summary>
         /// 添加单
         /// </summary>

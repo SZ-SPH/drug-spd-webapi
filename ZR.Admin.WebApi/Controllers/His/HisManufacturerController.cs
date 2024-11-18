@@ -1,29 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ZR.Model.Business.Dto;
-using ZR.Model.Business;
-using ZR.Service.Business.IBusinessService;
+using ZR.Model.His.Dto;
+using ZR.Model.His;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
-using ZR.Service.Business;
+using ZR.Service.His;
+using ZR.Service.His.IHisService;
 
-namespace ZR.Admin.WebApi.Controllers.Business
+namespace ZR.Admin.WebApi.Controllers.His
 {
     /// <summary>
     /// 药品基础资料管理
     /// </summary>
     [AllowAnonymous]
 
-    [Route("business/HisDrug")]
-    public class HisDrugController : BaseController
+    [Route("His/HisManufacturer")]
+    public class HisManufacturerController : BaseController
     {
         /// <summary>
         /// 药品基础资料管理接口
         /// </summary>
-        private readonly IHisDrugService _HisDrugService;
+        private readonly IHisManufacturerService _HisManufacturerService;
 
-        public HisDrugController(IHisDrugService HisDrugService)
+        public HisManufacturerController(IHisManufacturerService HisManufacturerService)
         {
-            _HisDrugService = HisDrugService;
+            _HisManufacturerService = HisManufacturerService;
         }
 
         /// <summary>
@@ -33,9 +33,9 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// <returns></returns>
         [HttpGet("list")]
         //[ActionPermissionFilter(Permission = "drug:list")]
-        public IActionResult QueryDrug([FromQuery] HisDrugQueryDto parm)
+        public IActionResult QueryDrug([FromQuery] HisManufacturerQueryDto parm)
         {
-            var response = _HisDrugService.GetList(parm);
+            var response = _HisManufacturerService.GetList(parm);
             return SUCCESS(response);
         }
 
@@ -49,12 +49,12 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [ActionPermissionFilter(Permission = "drug:query")]
         public IActionResult GetDrug(string code)
         {
-            var response = _HisDrugService.GetInfo(code);
+            var response = _HisManufacturerService.GetInfo(code);
 
-            var info = response.Adapt<HisDrugDto>();
+            var info = response.Adapt<HisManufacturerDto>();
             return SUCCESS(info);
         }
-  
+
 
     }
 }

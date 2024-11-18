@@ -328,7 +328,19 @@ namespace ZR.Service.Business
 
             return response;
         }
-   
+
+
+        public List<CodeDetailsDto> AddGetList(CodeDetailsQueryDto parm)
+        {
+            var predicate = QueryExp(parm);
+
+            var response = Queryable()
+                .Where(predicate.ToExpression());
+
+            return (List<CodeDetailsDto>)response;
+        }
+
+
         /// <summary>
         /// 查询导出表达式
         /// </summary>

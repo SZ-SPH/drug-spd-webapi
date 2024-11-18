@@ -1,16 +1,18 @@
-﻿namespace ZR.Model.Business
+﻿namespace ZR.Model.His.Dto
 {
     /// <summary>
-    /// HIS药品基础资料管理
+    /// 药品基础资料管理查询对象
     /// </summary>
-    [Tenant(1)]
-    [SugarTable("xthis_nhqdwrmyy.V_XYXT_DRM_DICTIONARY")]
-    public class HisDrug
+    public class HisDrugQueryDto : PagerInfo
     {
-        public string iD
-        {
-            get; set;
-        }
+
+    }
+
+    /// <summary>
+    /// 药品基础资料管理输入输出对象
+    /// </summary>
+    public class HisDrugDto
+    {
 
         public string drugs_code { get; set; }
 
@@ -39,6 +41,9 @@
 
         public string produce_name { get; set; }
 
+        public string PURCH_PRICE { get; set; }
+        public string KFYX { get; set; }
+        public string YFYX { get; set; }
 
     }
 }

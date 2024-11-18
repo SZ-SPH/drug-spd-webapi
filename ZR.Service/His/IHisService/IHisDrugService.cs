@@ -1,7 +1,8 @@
 ﻿using ZR.Model.Business.Dto;
-using ZR.Model.Business;
+using ZR.Model.His;
+using ZR.Model.His.Dto;
 
-namespace ZR.Service.Business.IBusinessService
+namespace ZR.Service.His.IHisService
 {
     /// <summary>
     /// 药品基础资料管理service接口
