@@ -11,7 +11,7 @@ namespace ZR.Model.Business
         /// Id 
         /// </summary>
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         /// <summary>
         /// 入库单id 

@@ -26,8 +26,8 @@ namespace ZR.Model.Business.Dto
         //[Required(ErrorMessage = "Id不能为空")]
         //[ExcelColumn(Name = "Id")]
         [ExcelColumnName("Id")]
-        public int Id { get; set; }
-        public int MedicalAdviceId { get; set; }
+        public int? Id { get; set; }
+        public int? MedicalAdviceId { get; set; }
 
         
         //[ExcelColumn(Name = "入库单id")]

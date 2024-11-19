@@ -127,7 +127,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             foreach (var item in parm)
             {
                 var modal = item.Adapt<CodeDetails>().ToCreate(HttpContext);
-                modal.InvoiceCode = _WarehouseReceiptService.GetInfo((int)(item.Receiptid)).InvoiceNumber;              
+                modal.InvoiceCode = _WarehouseReceiptService.GetInfo((int)(item.Receiptid)).InvoiceNumber;    
                 var response = _CodeDetailsService.AddCodeDetails(modal);
                 //当执行成功后 去药品表 修改 绑定 ref_code
                if (response != null)

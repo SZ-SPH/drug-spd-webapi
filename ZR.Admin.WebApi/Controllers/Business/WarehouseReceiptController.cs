@@ -153,7 +153,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 for (int i = 0; i < parmlist.ReceiptIds.Count; i++)
                 {
                     var ws= _WarehouseReceiptService.GetId(parmlist.ReceiptIds[i]);
-                    ws.State = "已上传";
+                    ws.State = "已推送";
                     var modal = ws.Adapt<WarehouseReceipt>().ToUpdate(HttpContext);
                     var response = _WarehouseReceiptService.UpdateWarehouseReceipt(modal);                   
                 }
