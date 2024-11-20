@@ -26,7 +26,7 @@ namespace ZR.Model.Business
         public string Org_Id { get; set; }
         public string Supplier_Id { get; set; }
         public List<MedItem> Med_List { get; set; }
-        public int ReceiptId { get; set; }
+        //public int ReceiptId { get; set; }
 
     }
 

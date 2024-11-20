@@ -21,8 +21,8 @@ namespace ZR.Model.Business
 
         public string BillCode { get; set; }
         public string Codes { get; set; }
-        [SugarColumn(ColumnName = "createTime", InsertServerTime = true)]
-        public DateTime CreateTime { get; set; }
+        //[SugarColumn(ColumnName = "createTime", InsertServerTime = true)]
+        //public DateTime CreateTime { get; set; }
 
     }
 }

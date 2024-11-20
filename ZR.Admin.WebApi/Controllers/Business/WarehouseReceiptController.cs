@@ -10,14 +10,24 @@ using Aliyun.OSS;
 using System;
 using Newtonsoft.Json;
 using System.Text;
+using Newtonsoft.Json.Serialization;
+using NLog;
+using Microsoft.AspNetCore.JsonPatch.Helpers;
 
 //创建时间：2024-08-28
 namespace ZR.Admin.WebApi.Controllers.Business
 {
+    public class LowercaseContractResolver : DefaultContractResolver
+    {
+        protected override string ResolvePropertyName(string propertyName)
+        {
+            return propertyName.ToLower(); // 将属性名转换为小写
+        }
+    }
     /// <summary>
     /// 入库单
     /// </summary>
-    [Verify]
+    [AllowAnonymous]
     [Route("business/WarehouseReceipt")]
     public class WarehouseReceiptController : BaseController
     {
@@ -27,15 +37,19 @@ namespace ZR.Admin.WebApi.Controllers.Business
         private readonly IInWarehousingService _InWarehousingService;
         private readonly IWarehouseReceiptService _WarehouseReceiptService;
         private readonly ICodeDetailsService _ICodeDetailsService;
+        private readonly IDrugService _IDrugService;
+        private readonly ISupplierService _SupplierService;
 
 
         public WarehouseReceiptController(IWarehouseReceiptService WarehouseReceiptService
-            ,IInWarehousingService InWarehousingService,ICodeDetailsService CodeDetailsService
+            ,IInWarehousingService InWarehousingService,ICodeDetailsService CodeDetailsService,IDrugService drugService,ISupplierService SupplierService
             )
         {
             _WarehouseReceiptService = WarehouseReceiptService;
             _InWarehousingService = InWarehousingService;
             _ICodeDetailsService = CodeDetailsService;
+            _IDrugService = drugService;
+            _SupplierService = SupplierService;
 
         }
 
@@ -112,10 +126,14 @@ namespace ZR.Admin.WebApi.Controllers.Business
             List<WarehouseStorageRequest> requests = new List<WarehouseStorageRequest>();
             for (int i = 0; i < parmlist.ReceiptIds.Count; i++)
             {
+                var rece = _WarehouseReceiptService.GetInfo(parmlist.ReceiptIds[i]);
+                var sup = _SupplierService.GetInfo(rece.SupplierId.GetValueOrDefault());
+
                 var storageDto = new WarehouseStorageRequest
                 {
                     Warehouse_Code = parmlist.Warehousecode,
                     Org_Id = string.IsNullOrEmpty(parmlist.org_id) ? "RSS20171211000000001" : parmlist.org_id,
+                    Supplier_Id = sup.SupplierHisId,
                     Med_List = new List<MedItem>()
                 };
 
@@ -123,9 +141,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 var response = _InWarehousingService.inGetList(parmlist.ReceiptIds[i]);
                 foreach (var item in response)
                 {
+                    var drugs=_IDrugService.GetInfo(item.DrugId);
                     var medItem = new MedItem
                     {
-                        Drug_Id = item.DrugId.ToString(),
+                        Drug_Id = drugs.HisID,
                         Qty = item.InventoryQuantity.ToString(),
                         Batch_No = item.BatchNumber,
                         Indate = item.Exprie?.ToString(),
@@ -191,11 +210,19 @@ namespace ZR.Admin.WebApi.Controllers.Business
         {
             using (var client = new HttpClient())
             {
-                string url = "http://127.0.0.1:8080/xtHisService/xyxtSendAction!warehouseStorage.do";
-
+                string url = "http://192.168.101.22:8080/xtHisService/xyxtSendAction!warehouseStorage.do";
+                //http://192.168.101.223:8080/xtHisService/xyxtSendAction!warehouseStorage.do
                 // 将 requests 转换为 JSON 字符串
-                var json = JsonConvert.SerializeObject(requests);
+                //var json = JsonConvert.SerializeObject(requests);
+                var json = JsonConvert.SerializeObject(requests, new JsonSerializerSettings
+                {
+                    ContractResolver = new LowercaseContractResolver()
+                });
+
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
+              
+                Console.WriteLine($"Request URL: {url}");
+                Console.WriteLine($"Request Body: {json}");
 
                 HttpResponseMessage response = await client.PostAsync(url, content);
 
