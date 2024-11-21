@@ -166,7 +166,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             var apiResponse = await SendRequestsAsync(requests);
 
             // 处理返回的结果
-            if (apiResponse.Code == "1")
+            if (apiResponse[0].Code == "1")
             {
                 // 处理成功的响应 --状态修改 入库单批量修改状态 为上传成功 否则修改为提示上传失败
                 for (int i = 0; i < parmlist.ReceiptIds.Count; i++)
@@ -179,12 +179,12 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
 
 
-                return SUCCESS(apiResponse.Data);
+                return SUCCESS(apiResponse[0].Data);
             }
             else
             {
                 // 处理失败的响应
-                return BadRequest($"请求失败: {apiResponse.Msg}");
+                return BadRequest($"请求失败: {apiResponse[0].Msg}");
             }
             // 执行修改状态，成功的状态修改为已经推送
         }
@@ -206,41 +206,38 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return  _ICodeDetailsService.AddGetList(codeDetailsQuery);
         }
 
-        private async Task<ApiResponse> SendRequestsAsync(List<WarehouseStorageRequest> requests)
+        private async Task<List<ApiResponse>> SendRequestsAsync(List<WarehouseStorageRequest> requests)
         {
-            using (var client = new HttpClient())
+           List<ApiResponse> api=   new List<ApiResponse>();
+            for (int i = 0; i < requests.Count; i++)
             {
-                string url = "http://192.168.101.22:8080/xtHisService/xyxtSendAction!warehouseStorage.do";
-                //http://192.168.101.223:8080/xtHisService/xyxtSendAction!warehouseStorage.do
-                // 将 requests 转换为 JSON 字符串
-                //var json = JsonConvert.SerializeObject(requests);
-                var json = JsonConvert.SerializeObject(requests, new JsonSerializerSettings
+                using (var client = new HttpClient())
                 {
-                    ContractResolver = new LowercaseContractResolver()
-                });
-
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-              
-                Console.WriteLine($"Request URL: {url}");
-                Console.WriteLine($"Request Body: {json}");
-
-                HttpResponseMessage response = await client.PostAsync(url, content);
-
-                // 获取响应内容
-                var responseContent = await response.Content.ReadAsStringAsync();
-
-                if (response.IsSuccessStatusCode)
-                {
-                    // 解析 JSON 响应
-                    var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
-                    return apiResponse; // 返回 ApiResponse 对象
-                }
-                else
-                {
-                    // 处理错误
-                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
+                    string url = "http://192.168.101.223:8080/xtHisService/xyxtSendAction!warehouseStorage.do";
+                    var json = JsonConvert.SerializeObject(requests[i], new JsonSerializerSettings
+                    {
+                        ContractResolver = new LowercaseContractResolver()
+                    });
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(url, content);
+                    // 获取响应内容
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // 解析 JSON 响应
+                        var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
+                        api.Add(apiResponse);
+                        //return apiResponse; // 返回 ApiResponse 对象
+                    }
+                    else
+                    {
+                        // 处理错误
+                        throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
+                    }
                 }
             }
+            return api;
+          
         }
         //public async Task<IActionResult> SendOutWarehouseReceiptAsync([FromBody] AllList parmlist)
         //{
