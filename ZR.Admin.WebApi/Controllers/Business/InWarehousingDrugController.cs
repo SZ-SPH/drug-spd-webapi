@@ -69,9 +69,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             foreach (var parm in parmList)
             {
                 var modal = parm.Adapt<InWarehousingDrug>().ToCreate(HttpContext);
-
                 var response = _InWarehousingDrugService.AddInWarehousingDrug(modal);
-
             }
 
 
@@ -92,6 +90,16 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
             return ToResponse(response);
         }
+
+        [HttpPut("UpdatePdaInWarehousingDrug")]
+        [ActionPermissionFilter(Permission = "inWarehousingDrug:edit")]
+        [Log(Title = "入库信息", BusinessType = BusinessType.UPDATE)]
+        public IActionResult UpdatePdaInWarehousingDrug([FromBody] InWarehousingDrugDto parm)
+        {
+            var response = _InWarehousingDrugService.UpdatePdaInWarehousingDrug(parm);
+            return SUCCESS(response != -1 ? "处理成功" : "处理失败");
+        }
+
 
         /// <summary>
         /// 删除入库信息

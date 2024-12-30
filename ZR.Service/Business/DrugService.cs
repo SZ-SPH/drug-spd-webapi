@@ -53,20 +53,25 @@ namespace ZR.Service.Business
         public Drug GetListWithCondition(InWarehousingPdaDto parm)
         {
             string tracingCodePrefix = "";
-            Dictionary<string, object> dict = Tools.CodeInOneWay(parm.TracingSourceCode)[0];
-            if (dict.ContainsKey("sub_code")) 
+            List<Dictionary<string, object>> list = Tools.CodeInOneWay(parm.TracingSourceCode);
+            if (list.Count != 0)
             {
-                var value = ( List<AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo>) dict["sub_code"];
-                tracingCodePrefix = value.Where(x => x.CodePackLevel == "1").First().Code.Substring(0, 7);
+                Dictionary<string, object> dict = Tools.CodeInOneWay(parm.TracingSourceCode).ElementAtOrDefault(0);
+                if (dict.ContainsKey("sub_code"))
+                {
+                    var value = (List<AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo>)dict["sub_code"];
+                    tracingCodePrefix = value.Where(x => x.CodePackLevel == "1").First().Code.Substring(0, 7);
+                }
+                else
+                {
+                    tracingCodePrefix = dict["code"].ToString().Substring(0, 7);
+                }
+                var response = Queryable()
+                    .Where(x => x.RefCode == tracingCodePrefix)
+                    .First();
+                return response;
             }
-            else
-            {
-                tracingCodePrefix = dict["code"].ToString().Substring(0,7);
-            }
-            var response = Queryable()
-                .Where(x => x.RefCode == tracingCodePrefix)
-                .First();
-            return response;
+            return new Drug();
         }
 
 

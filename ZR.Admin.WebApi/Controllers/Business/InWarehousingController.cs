@@ -191,7 +191,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 BatchNo = parmList.DrugBatchNumber
             };
             var response = _CodeDetailsService.AddCodeDetails(codeDetails);
-
             var userName = HttpContext.GetName();
             //TODO
             Task.Run(async () =>

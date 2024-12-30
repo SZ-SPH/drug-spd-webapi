@@ -1,5 +1,6 @@
 ﻿using ZR.Model.Business.Dto;
 using ZR.Model.Business;
+using Infrastructure.Model;
 
 namespace ZR.Service.Business.IBusinessService
 {
@@ -18,5 +19,6 @@ namespace ZR.Service.Business.IBusinessService
 
 
         PagedInfo<InWarehousingDrugDto> ExportList(InWarehousingDrugQueryDto parm);
+        int UpdatePdaInWarehousingDrug(InWarehousingDrugDto parm);
     }
 }
