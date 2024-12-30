@@ -65,6 +65,7 @@ namespace ZR.Model.Business
         /// </summary>
         //[SugarColumn(ColumnName = "rECEIPT_ID")]
         public string Exprie { get; set; }
+
         /// <summary>
         /// 价格 
         /// </summary>
@@ -84,7 +85,13 @@ namespace ZR.Model.Business
         /// </summary>
         //[SugarColumn(ColumnName = "rECEIPT_ID")]
         public string Minunit { get; set; }
+        //[ExcelColumn(Name = "转换系数")]
+        //[ExcelColumnName("转换系数")]
+        public int? PackageRatio { get; set; }
 
+        //[ExcelColumn(Name = "包装单位")]
+        //[ExcelColumnName("包装单位")]
+        public string PackageUnit { get; set; }
 
 
     }

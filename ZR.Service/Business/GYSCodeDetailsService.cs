@@ -8,35 +8,41 @@ using ZR.Service.Business.IBusinessService;
 namespace ZR.Service.Business
 {
     /// <summary>
-    /// 送货单Service业务层处理
+    /// 送货单追溯码Service业务层处理
     /// </summary>
-    [AppService(ServiceType = typeof(IDeliveryOrderService), ServiceLifetime = LifeTime.Transient)]
-    public class DeliveryOrderService : BaseService<DeliveryOrder>, IDeliveryOrderService
+    [AppService(ServiceType = typeof(IGYSCodeDetailsService), ServiceLifetime = LifeTime.Transient)]
+    public class GYSCodeDetailsService : BaseService<GYSCodeDetails>, IGYSCodeDetailsService
     {
         /// <summary>
-        /// 查询送货单列表
+        /// 查询送货单追溯码列表
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<DeliveryOrderDto> GetList(DeliveryOrderQueryDto parm)
+        public PagedInfo<GYSCodeDetailsDto> GetList(GYSCodeDetailsQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
-                //.OrderBy("Id asc")
                 .Where(predicate.ToExpression())
-                .ToPage<DeliveryOrder, DeliveryOrderDto>(parm);
+                .ToPage<GYSCodeDetails, GYSCodeDetailsDto>(parm);
 
             return response;
         }
-
+        public List<GYSCodeDetails> CodeGetList(int id,int inid)
+        {
+            var response = Queryable()
+                .Where(it => it.Deliveryid == id && it.InDeliveryId == inid)
+                .Where(it => it.Deliveryid != null && it.InDeliveryId != null)
+                .ToList();
+            return response;
+        }
 
         /// <summary>
         /// 获取详情
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public DeliveryOrder GetInfo(int Id)
+        public GYSCodeDetails GetInfo(int Id)
         {
             var response = Queryable()
                 .Where(x => x.Id == Id)
@@ -46,44 +52,44 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 添加送货单
+        /// 添加送货单追溯码
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public DeliveryOrder AddDeliveryOrder(DeliveryOrder model)
+        public GYSCodeDetails AddGYSCodeDetails(GYSCodeDetails model)
         {
             return Insertable(model).ExecuteReturnEntity();
         }
 
         /// <summary>
-        /// 修改送货单
+        /// 修改送货单追溯码
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public int UpdateDeliveryOrder(DeliveryOrder model)
+        public int UpdateGYSCodeDetails(GYSCodeDetails model)
         {
             return Update(model, true);
         }
 
         /// <summary>
-        /// 清空送货单
+        /// 清空送货单追溯码
         /// </summary>
         /// <returns></returns>
-        public bool TruncateDeliveryOrder()
+        public bool TruncateGYSCodeDetails()
         {
-            var newTableName = $"DeliveryOrder_{DateTime.Now:yyyyMMdd}";
+            var newTableName = $"GYSCodeDetails_{DateTime.Now:yyyyMMdd}";
             if (Queryable().Any() && !Context.DbMaintenance.IsAnyTable(newTableName))
             {
-                Context.DbMaintenance.BackupTable("DeliveryOrder", newTableName);
+                Context.DbMaintenance.BackupTable("GYSCodeDetails", newTableName);
             }
             
             return Truncate();
         }
         /// <summary>
-        /// 导入送货单
+        /// 导入送货单追溯码
         /// </summary>
         /// <returns></returns>
-        public (string, object, object) ImportDeliveryOrder(List<DeliveryOrder> list)
+        public (string, object, object) ImportGYSCodeDetails(List<GYSCodeDetails> list)
         {
             var x = Context.Storageable(list)
                 .SplitInsert(it => !it.Any())
@@ -108,17 +114,17 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 导出送货单
+        /// 导出送货单追溯码
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<DeliveryOrderDto> ExportList(DeliveryOrderQueryDto parm)
+        public PagedInfo<GYSCodeDetailsDto> ExportList(GYSCodeDetailsQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
                 .Where(predicate.ToExpression())
-                .Select((it) => new DeliveryOrderDto()
+                .Select((it) => new GYSCodeDetailsDto()
                 {
                 }, true)
                 .ToPage(parm);
@@ -131,18 +137,18 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        private static Expressionable<DeliveryOrder> QueryExp(DeliveryOrderQueryDto parm)
+        private static Expressionable<GYSCodeDetails> QueryExp(GYSCodeDetailsQueryDto parm)
         {
-            var predicate = Expressionable.Create<DeliveryOrder>();
+            var predicate = Expressionable.Create<GYSCodeDetails>();
 
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.BillCode), it => it.BillCode.Contains(parm.BillCode));
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.InvoiceNo), it => it.InvoiceNo == parm.InvoiceNo);
-            //predicate = predicate.AndIF(parm.BeginCreateTime == null, it => it.CreateTime >= DateTime.Now.ToShortDateString().ParseToDateTime());
-            //predicate = predicate.AndIF(parm.BeginCreateTime != null, it => it.CreateTime >= parm.BeginCreateTime);
-            //predicate = predicate.AndIF(parm.EndCreateTime != null, it => it.CreateTime <= parm.EndCreateTime);
-            //predicate = predicate.AndIF(parm.BeginPushTime == null, it => it.PushTime >= DateTime.Now.ToShortDateString().ParseToDateTime());
-            //predicate = predicate.AndIF(parm.BeginPushTime != null, it => it.PushTime >= parm.BeginPushTime);
-            //predicate = predicate.AndIF(parm.EndPushTime != null, it => it.PushTime <= parm.EndPushTime);
+            predicate = predicate.AndIF(parm.Deliveryid != null, it => it.Deliveryid == parm.Deliveryid);
+            predicate = predicate.AndIF(parm.DrugId != null, it => it.DrugId == parm.DrugId);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Code), it => it.Code == parm.Code);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.PhysicName), it => it.PhysicName.Contains(parm.PhysicName));
+            predicate = predicate.AndIF(parm.InDeliveryId != null, it => it.InDeliveryId == parm.InDeliveryId);
+            predicate = predicate.AndIF(parm.MedicalAdviceId != null, it => it.MedicalAdviceId == parm.MedicalAdviceId);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.InvoiceCode), it => it.InvoiceCode == parm.InvoiceCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ParentCode), it => it.ParentCode == parm.ParentCode);
             return predicate;
         }
     }

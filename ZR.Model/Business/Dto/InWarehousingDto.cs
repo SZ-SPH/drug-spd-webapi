@@ -79,6 +79,10 @@ namespace ZR.Model.Business.Dto
         //[SugarColumn(ColumnName = "rECEIPT_ID")]
         public string Minunit { get; set; }
 
+        public int? PackageRatio { get; set; }
+
+
+        public string PackageUnit { get; set; }
 
     }
 

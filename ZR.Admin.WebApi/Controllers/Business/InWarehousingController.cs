@@ -121,7 +121,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 //    };
                 //    _StockService.AddStock(item);
                 //}
-
                 //Task.Run(async () =>
                 //{
                 //    Stock stock = new Stock

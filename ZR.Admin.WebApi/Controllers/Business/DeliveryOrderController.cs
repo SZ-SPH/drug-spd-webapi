@@ -4,8 +4,12 @@ using ZR.Model.Business;
 using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
+using ZR.Model.System;
+using ZR.Model;
+using SqlSugar;
+using MapsterMapper;
 
-//创建时间：2024-08-27
+//创建时间：2024-12-03
 namespace ZR.Admin.WebApi.Controllers.Business
 {
     /// <summary>
@@ -19,10 +23,33 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// 送货单接口
         /// </summary>
         private readonly IDeliveryOrderService _DeliveryOrderService;
+        private readonly IDeliveryOrderDrugService _DeliveryOrderDrugService;
+        private readonly IGYSCodeDetailsService _GYSCodeDetailsService;
 
-        public DeliveryOrderController(IDeliveryOrderService DeliveryOrderService)
+        private readonly IInWarehousingService _InWarehousingService;
+        private readonly IWarehouseReceiptService _WarehouseReceiptService;
+        private readonly ICodeDetailsService _CodeDetailsService;
+
+        private readonly ISupplierService _SupplierService;
+
+        private readonly ISysUserService _SysUserService;
+
+
+
+        public DeliveryOrderController(IDeliveryOrderService DeliveryOrderService, IInWarehousingService inWarehousingService, IWarehouseReceiptService WarehouseReceiptService
+         , ICodeDetailsService codeDetailsService, IGYSCodeDetailsService gYSCodeDetailsService, IDeliveryOrderDrugService deliveryOrderDrugService, ISupplierService supplierService,
+              ISysUserService sysUserService)
         {
+
             _DeliveryOrderService = DeliveryOrderService;
+            _DeliveryOrderDrugService = deliveryOrderDrugService;
+            _GYSCodeDetailsService = gYSCodeDetailsService;
+            _InWarehousingService = inWarehousingService;
+            _WarehouseReceiptService = WarehouseReceiptService;
+            _CodeDetailsService = codeDetailsService;
+            _SupplierService = supplierService;
+            _SysUserService = sysUserService;
+
         }
 
         /// <summary>
@@ -49,7 +76,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         public IActionResult GetDeliveryOrder(int Id)
         {
             var response = _DeliveryOrderService.GetInfo(Id);
-            
+
             var info = response.Adapt<DeliveryOrderDto>();
             return SUCCESS(info);
         }
@@ -63,6 +90,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [Log(Title = "送货单", BusinessType = BusinessType.INSERT)]
         public IActionResult AddDeliveryOrder([FromBody] DeliveryOrderDto parm)
         {
+            parm.PushTime = new DateTime(1900, 1, 1, 00, 00, 00);
             var modal = parm.Adapt<DeliveryOrder>().ToCreate(HttpContext);
 
             var response = _DeliveryOrderService.AddDeliveryOrder(modal);
@@ -92,7 +120,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [HttpDelete("delete/{ids}")]
         [ActionPermissionFilter(Permission = "deliveryorder:delete")]
         [Log(Title = "送货单", BusinessType = BusinessType.DELETE)]
-        public IActionResult DeleteDeliveryOrder([FromRoute]string ids)
+        public IActionResult DeleteDeliveryOrder([FromRoute] string ids)
         {
             var idArr = Tools.SplitAndConvert<int>(ids);
 
@@ -165,6 +193,109 @@ namespace ZR.Admin.WebApi.Controllers.Business
         {
             var result = DownloadImportTemplate(new List<DeliveryOrderDto>() { }, "DeliveryOrder");
             return ExportExcel(result.Item2, result.Item1);
+        }
+
+        /// <summary>
+        /// 推送同步按钮 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("Tuisong")]
+        public IActionResult Tuisong([FromBody]List<int> Deids)
+        {
+            var id = HttpContext.GetUId();
+            SysUser user = _SysUserService.SelectUserById(id);
+            //传递 入库单据信息 传递当前登录的 供应商
+            foreach (var deid in Deids)
+            {
+                DeliveryOrder deliveryOrder = _DeliveryOrderService.GetInfo(deid);
+                List<DeliveryOrderDrug> deliveryOrderDrug = _DeliveryOrderDrugService.DrugGetList(deid);
+                if (deliveryOrderDrug == null || deliveryOrderDrug.Count<=0)
+                {
+                    continue;
+                }
+                AllSupplierQueryDto supplierQueryDto = new AllSupplierQueryDto();
+                supplierQueryDto.SupplierName = user.NickName;
+                List<Supplier> supplier = _SupplierService.AllGetList(supplierQueryDto);
+                //获取 药品信息  先创建 入库单据 -- 药品 -- 码 相关联
+                WarehouseReceipt warehouseReceipt = new();
+                warehouseReceipt.ReceiptCode = GenerateInvoiceNumber();
+                warehouseReceipt.StorageTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                warehouseReceipt.ChangeTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                warehouseReceipt.CreationTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                warehouseReceipt.SupplierId = supplier[0].Id;
+                warehouseReceipt.InvoiceNumber = deliveryOrder.InvoiceNo;
+                warehouseReceipt.Creator = user.NickName;
+                warehouseReceipt.ModifiedBy = user.NickName;
+                warehouseReceipt.State = "未推送";
+                warehouseReceipt.Mark = $"由{user.NickName}推送，送货单为{deliveryOrder.BillCode}";
+                var modal = warehouseReceipt.Adapt<WarehouseReceipt>().ToCreate(HttpContext);
+                var response = _WarehouseReceiptService.AddWarehouseReceipt(modal);
+
+                foreach (var item in deliveryOrderDrug)
+                {
+                    InWarehousing inWarehousing = new InWarehousing();
+                    inWarehousing.Id = item.Id;
+                    inWarehousing.DrugId = (int)item.DrugId;
+                    inWarehousing.DrugCode = item.DrugCode;
+                    inWarehousing.BatchNumber = item.DrugBatchNo;
+                    inWarehousing.InventoryQuantity = (int)item.DrugQuantity;
+                    inWarehousing.DrugSpecifications = item.DrugSpecification;
+                    inWarehousing.ReceiptId = response.ReceiptId;
+                    inWarehousing.ManufacturerId = item.Manufacturer;
+                    inWarehousing.Exprie = item.Exprie;
+                    inWarehousing.Price = item.UnitPrice;
+                    inWarehousing.DateOfManufacture = item.Manufacturer;
+                    inWarehousing.Minunit = item.Minunit;
+                    inWarehousing.PackageRatio = item.PackageRatio;
+                    inWarehousing.PackageUnit = item.PackageUnit;
+                    var Inmodal = inWarehousing.Adapt<InWarehousing>().ToCreate(HttpContext);
+                    var Inresponse = _InWarehousingService.AddInWarehousing(Inmodal);
+                    List<GYSCodeDetails> gYSCodeDetails = _GYSCodeDetailsService.CodeGetList(deliveryOrder.Id,item.Id);
+                    if (gYSCodeDetails == null || gYSCodeDetails.Count <= 0) continue;
+                    foreach (var gysitem in gYSCodeDetails)
+                    {
+                        CodeDetails codeDetails = Mapset(gysitem, Inresponse.Id, response.ReceiptId);
+                        _CodeDetailsService.AddCodeDetails(codeDetails);
+                    }
+
+                }
+            }
+            return SUCCESS("true");
+        }
+
+        private CodeDetails Mapset(GYSCodeDetails gYSCodeDetails, int InWarehouseId, int Receiptid)
+        {
+            var codeDetails = new CodeDetails
+            {
+                Receiptid= Receiptid,
+                InWarehouseId = InWarehouseId // 设置 OutOrderId
+            };
+
+            var GYSCodeProperties = typeof(GYSCodeDetails).GetProperties();
+            var codeDetailsProperties = typeof(CodeDetails).GetProperties();
+
+            foreach (var phaOutProp in GYSCodeProperties)
+            {
+                // 查找与 PhaOut 属性同名的 OuWarehouset 属性
+                var matchingProp = codeDetailsProperties.FirstOrDefault(p => p.Name == phaOutProp.Name);
+                if (matchingProp != null && matchingProp.CanWrite)
+                {
+                    // 复制属性值
+                    matchingProp.SetValue(codeDetails, phaOutProp.GetValue(gYSCodeDetails));
+                }
+            }
+            return codeDetails;
+        }
+        public string GenerateInvoiceNumber()
+        {
+            // 获取当前日期，格式为 YYYYMMDD
+            string currentDate = DateTime.Now.ToString("yyyyMMdd");
+            var num = _WarehouseReceiptService.GetCode().Count;
+            // 增加流水号
+            // 获取当前日期的流水号
+            // 生成单据编号，格式为 YYYYMMDD-XXX
+            string invoiceNumber = $"RKD{currentDate}{num++:D3}";
+            return invoiceNumber;
         }
 
     }

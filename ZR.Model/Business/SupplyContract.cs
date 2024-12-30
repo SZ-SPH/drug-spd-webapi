@@ -2,15 +2,15 @@
 namespace ZR.Model.Business
 {
     /// <summary>
-    /// 合同管理
+    /// 合同
     /// </summary>
     [SugarTable("SupplyContract")]
     public class SupplyContract
     {
         /// <summary>
-        /// Id 
+        /// 合同的唯一标识符 
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int Id { get; set; }
 
         /// <summary>
@@ -19,34 +19,54 @@ namespace ZR.Model.Business
         public string ContractCode { get; set; }
 
         /// <summary>
-        /// 合同内容 
+        /// 合同名称 
         /// </summary>
-        public string ContractContent { get; set; }
+        public string ContractName { get; set; }
 
         /// <summary>
-        /// 合同日期 
+        /// 合同开始日期 
         /// </summary>
-        public string ContractDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         /// <summary>
-        /// 合同药品 
+        /// 合同结束日期 
         /// </summary>
-        public string DrugId { get; set; }
+        public DateTime? EndDate { get; set; }
 
         /// <summary>
-        /// 合同医院 
+        /// 合同类型 
         /// </summary>
-        public string HospitalId { get; set; }
+        public string ContractType { get; set; }
 
         /// <summary>
-        /// 合同供应商 
+        /// 合同供应商名称 
         /// </summary>
-        public string SupplierId { get; set; }
+        public string SupplierName { get; set; }
 
         /// <summary>
-        /// 状态 
+        /// 合同状态 
         /// </summary>
         public string States { get; set; }
+
+        /// <summary>
+        /// 创建时间 
+        /// </summary>
+        public DateTime? CreatedAt { get; set; }
+
+        /// <summary>
+        /// 创建人 
+        /// </summary>
+        public string CreatedBy { get; set; }
+
+        /// <summary>
+        /// 修改时间 
+        /// </summary>
+        public DateTime? ModifiedAt { get; set; }
+
+        /// <summary>
+        /// 修改人 
+        /// </summary>
+        public string ModifiedBy { get; set; }
 
     }
 }

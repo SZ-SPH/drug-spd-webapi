@@ -5,7 +5,7 @@ using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
 
-//创建时间：2024-08-27
+//创建时间：2024-12-03
 namespace ZR.Admin.WebApi.Controllers.Business
 {
     /// <summary>
@@ -61,13 +61,17 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [HttpPost]
         [ActionPermissionFilter(Permission = "deliveryorderdrug:add")]
         [Log(Title = "送货单药品", BusinessType = BusinessType.INSERT)]
-        public IActionResult AddDeliveryOrderDrug([FromBody] DeliveryOrderDrugDto parm)
+        public IActionResult AddDeliveryOrderDrug([FromBody]List<DeliveryOrderDrugDto>parm)
         {
-            var modal = parm.Adapt<DeliveryOrderDrug>().ToCreate(HttpContext);
+            foreach (var item in parm)
+            {
+                var modal = item.Adapt<DeliveryOrderDrug>().ToCreate(HttpContext);
 
-            var response = _DeliveryOrderDrugService.AddDeliveryOrderDrug(modal);
+                var response = _DeliveryOrderDrugService.AddDeliveryOrderDrug(modal);
+            }
+ 
 
-            return SUCCESS(response);
+            return SUCCESS("true");
         }
 
         /// <summary>

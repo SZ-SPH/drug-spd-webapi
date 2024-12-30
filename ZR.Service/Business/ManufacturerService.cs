@@ -138,5 +138,14 @@ namespace ZR.Service.Business
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Code), it => it.Code == parm.Code);
             return predicate;
         }
+
+        public Manufacturer GetnNameInfo(string name)
+        {
+            var response = Queryable()
+                .Where(x => x.Name == name)
+                .First();
+
+            return response;
+        }
     }
 }

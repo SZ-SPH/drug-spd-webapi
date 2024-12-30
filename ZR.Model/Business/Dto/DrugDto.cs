@@ -9,7 +9,13 @@ namespace ZR.Model.Business.Dto
         public string DrugCode { get; set; }
         public string DrugMnemonicCode { get; set; }
     }
-
+    public class GYSDrugQueryDto : PagerInfo
+    {
+        public string SupplierName { get; set; }
+        public string DrugName { get; set; }
+        public string DrugCode { get; set; }
+        public string DrugMnemonicCode { get; set; }
+    }
     /// <summary>
     /// 药品基础资料管理输入输出对象
     /// </summary>

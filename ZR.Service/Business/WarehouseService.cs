@@ -135,7 +135,7 @@ namespace ZR.Service.Business
         {
             var predicate = Expressionable.Create<Warehouse>();
 
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Name), it => it.Name == parm.Name);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Name), it => it.Name.Contains(parm.Name));
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.State), it => it.State == parm.State);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Code), it => it.Code == parm.Code);
             return predicate;

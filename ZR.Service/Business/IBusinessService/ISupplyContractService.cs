@@ -4,7 +4,7 @@ using ZR.Model.Business;
 namespace ZR.Service.Business.IBusinessService
 {
     /// <summary>
-    /// 合同管理service接口
+    /// 合同service接口
     /// </summary>
     public interface ISupplyContractService : IBaseService<SupplyContract>
     {

@@ -13,6 +13,9 @@ using System.Text;
 using Newtonsoft.Json.Serialization;
 using NLog;
 using Microsoft.AspNetCore.JsonPatch.Helpers;
+using RestSharp.Extensions;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 //创建时间：2024-08-28
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -39,10 +42,11 @@ namespace ZR.Admin.WebApi.Controllers.Business
         private readonly ICodeDetailsService _ICodeDetailsService;
         private readonly IDrugService _IDrugService;
         private readonly ISupplierService _SupplierService;
+        private readonly IManufacturerService _ManufacturerService;
 
 
         public WarehouseReceiptController(IWarehouseReceiptService WarehouseReceiptService
-            ,IInWarehousingService InWarehousingService,ICodeDetailsService CodeDetailsService,IDrugService drugService,ISupplierService SupplierService
+            ,IInWarehousingService InWarehousingService,ICodeDetailsService CodeDetailsService,IDrugService drugService,ISupplierService SupplierService,IManufacturerService ManufacturerService
             )
         {
             _WarehouseReceiptService = WarehouseReceiptService;
@@ -50,6 +54,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             _ICodeDetailsService = CodeDetailsService;
             _IDrugService = drugService;
             _SupplierService = SupplierService;
+            _ManufacturerService = ManufacturerService;
 
         }
 
@@ -132,7 +137,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 var storageDto = new WarehouseStorageRequest
                 {
                     Warehouse_Code = parmlist.Warehousecode,
-                    Org_Id = string.IsNullOrEmpty(parmlist.org_id) ? "RSS20171211000000001" : parmlist.org_id,
+                    Org_Id = "RSS20180419000000001",
                     Supplier_Id = sup.SupplierHisId,
                     Med_List = new List<MedItem>()
                 };
@@ -142,17 +147,20 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 foreach (var item in response)
                 {
                     var drugs=_IDrugService.GetInfo(item.DrugId);
+                    var Manu = _ManufacturerService.GetnNameInfo(item.ManufacturerId);
+
                     var medItem = new MedItem
                     {
                         Drug_Id = drugs.HisID,
                         Qty = item.InventoryQuantity.ToString(),
                         Batch_No = item.BatchNumber,
-                        Indate = item.Exprie?.ToString(),
+                        Indate = !string.IsNullOrEmpty(item.Exprie) ?
+    DateTime.ParseExact(item.Exprie, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd") :
+    null,
                         Prod_Date = item.DateOfManufacture?.ToString(),
-                        Manufacturer_Id = item.ManufacturerId?.ToString(),
+                        Manufacturer_Id = Manu.HisId,
                         Price = item.Price?.ToString()
                     };
-
                     // 获取溯源码
                     var codes = await GetDrugTraceCodesAsync(item, parmlist.ReceiptIds[i]);
                     medItem.Drug_Trace_Code = string.Join(",", codes.Select(c => c.Code));
@@ -161,7 +169,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
                             }
                 requests.Add(storageDto);
             }
-
             // 调用发送请求的方法
             var apiResponse = await SendRequestsAsync(requests);
 
@@ -171,14 +178,14 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 // 处理成功的响应 --状态修改 入库单批量修改状态 为上传成功 否则修改为提示上传失败
                 for (int i = 0; i < parmlist.ReceiptIds.Count; i++)
                 {
+                    //接口访问成功！HIS入库单号：CGR20240005741
                     var ws= _WarehouseReceiptService.GetId(parmlist.ReceiptIds[i]);
                     ws.State = "已推送";
+                    int startIndex = apiResponse[0].Data.LastIndexOf("：") + 1; // 找到最后一个冒号的位置并加1
+                    ws.HisBuyCode = apiResponse[0].Data.Substring(startIndex);
                     var modal = ws.Adapt<WarehouseReceipt>().ToUpdate(HttpContext);
                     var response = _WarehouseReceiptService.UpdateWarehouseReceipt(modal);                   
                 }
-
-
-
                 return SUCCESS(apiResponse[0].Data);
             }
             else
@@ -232,9 +239,11 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     else
                     {
                         // 处理错误
-                        throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
+                        throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
                     }
+                    api[i].Msg = "Msg："+api[i].Msg +";JSON格式："+json;
                 }
+             
             }
             return api;
           

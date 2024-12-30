@@ -8,35 +8,64 @@ namespace ZR.Model.Business
     public class DeliveryOrderDrug
     {
         /// <summary>
-        /// Id 
+        /// Id，自增主键 
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int Id { get; set; }
 
         /// <summary>
-        /// DeliveryId 
+        /// 送货单 
         /// </summary>
-        public string DeliveryId { get; set; }
+        public int? DeliveryId { get; set; }
 
         /// <summary>
         /// 药品id 
         /// </summary>
-        public string DrugId { get; set; }
+        public int? DrugId { get; set; }
 
         /// <summary>
-        /// 药品信息 
+        /// 药品名称 
         /// </summary>
-        public string DrugDetails { get; set; }
+        public string DrugName { get; set; }
 
         /// <summary>
-        /// 数量 
+        /// 药品编号 
         /// </summary>
-        public string DrugQuantity { get; set; }
+        public string DrugCode { get; set; }
+
+        /// <summary>
+        /// 药品规格 
+        /// </summary>
+        public string DrugSpecification { get; set; }
+
+        /// <summary>
+        /// 药品批号 
+        /// </summary>
+        public string DrugBatchNo { get; set; }
+
+        /// <summary>
+        /// 生产厂家 
+        /// </summary>
+        public string Manufacturer { get; set; }
+
+        /// <summary>
+        /// 单价 
+        /// </summary>
+        public decimal UnitPrice { get; set; }
+
+        /// <summary>
+        /// 药品数量 
+        /// </summary>
+        public int? DrugQuantity { get; set; }
 
         /// <summary>
         /// 备注 
         /// </summary>
         public string Remarks { get; set; }
-
+        public string Minunit { get; set; }
+        public int? PackageRatio { get; set; }
+        public string PackageUnit { get; set; }
+        public string Exprie { get; set; }
+        public string DateOfManufacture { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using ZR.Model.Business.Dto;
 using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
+using Aliyun.OSS;
 
 namespace ZR.Service.Business
 {
@@ -23,8 +24,17 @@ namespace ZR.Service.Business
             var predicate = QueryExp(parm);
 
             var response = Queryable()
+                //.OrderBy("Id asc")
                 .Where(predicate.ToExpression())
                 .ToPage<DeliveryOrderDrug, DeliveryOrderDrugDto>(parm);
+
+            return response;
+        }
+        public List<DeliveryOrderDrug> DrugGetList(int DeliveryId)
+        {
+            var response = Queryable()
+            //.OrderBy("Id asc")
+               .Where(it => it.DeliveryId != null && it.DeliveryId == DeliveryId).ToList();
 
             return response;
         }
@@ -86,7 +96,6 @@ namespace ZR.Service.Business
         {
             var x = Context.Storageable(list)
                 .SplitInsert(it => !it.Any())
-                .SplitError(x => x.Item.Id.IsEmpty(), "Id不能为空")
                 //.WhereColumns(it => it.UserName)//如果不是主键可以这样实现（多字段it=>new{it.x1,it.x2}）
                 .ToStorage();
             var result = x.AsInsertable.ExecuteCommand();//插入可插入部分;
@@ -135,8 +144,11 @@ namespace ZR.Service.Business
         {
             var predicate = Expressionable.Create<DeliveryOrderDrug>();
 
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DeliveryId), it => it.DeliveryId == parm.DeliveryId);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugId), it => it.DrugId == parm.DrugId);
+            predicate = predicate.AndIF(parm.DeliveryId != null, it => it.DeliveryId == parm.DeliveryId);
+            predicate = predicate.AndIF(parm.DrugId != null, it => it.DrugId == parm.DrugId);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugName), it => it.DrugName.Contains(parm.DrugName));
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugBatchNo), it => it.DrugBatchNo == parm.DrugBatchNo);
             return predicate;
         }
     }

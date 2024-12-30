@@ -38,7 +38,18 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return SUCCESS(response);
         }
 
-
+        /// <summary>
+        /// 供应商查询药品基础资料管理列表
+        /// </summary>
+        /// <param name="parm"></param>
+        /// <returns></returns>
+        [HttpGet("GYSlist")]
+        [ActionPermissionFilter(Permission = "drug:list")]
+        public IActionResult GYSQueryDrug([FromQuery] GYSDrugQueryDto parm)
+        {
+            var response = _DrugService.GYSGetList(parm);
+            return SUCCESS(response);
+        }
         /// <summary>
         /// 查询药品基础资料管理详情
         /// </summary>

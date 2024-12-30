@@ -11,7 +11,7 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<DeliveryOrderDrugDto> GetList(DeliveryOrderDrugQueryDto parm);
 
         DeliveryOrderDrug GetInfo(int Id);
-
+        List<DeliveryOrderDrug> DrugGetList(int Id);
 
         DeliveryOrderDrug AddDeliveryOrderDrug(DeliveryOrderDrug parm);
         int UpdateDeliveryOrderDrug(DeliveryOrderDrug parm);

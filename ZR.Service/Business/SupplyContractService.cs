@@ -8,13 +8,13 @@ using ZR.Service.Business.IBusinessService;
 namespace ZR.Service.Business
 {
     /// <summary>
-    /// 合同管理Service业务层处理
+    /// 合同Service业务层处理
     /// </summary>
     [AppService(ServiceType = typeof(ISupplyContractService), ServiceLifetime = LifeTime.Transient)]
     public class SupplyContractService : BaseService<SupplyContract>, ISupplyContractService
     {
         /// <summary>
-        /// 查询合同管理列表
+        /// 查询合同列表
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
@@ -23,7 +23,6 @@ namespace ZR.Service.Business
             var predicate = QueryExp(parm);
 
             var response = Queryable()
-                //.OrderBy("Id asc")
                 .Where(predicate.ToExpression())
                 .ToPage<SupplyContract, SupplyContractDto>(parm);
 
@@ -46,7 +45,7 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 添加合同管理
+        /// 添加合同
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -56,7 +55,7 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 修改合同管理
+        /// 修改合同
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -66,7 +65,7 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 清空合同管理
+        /// 清空合同
         /// </summary>
         /// <returns></returns>
         public bool TruncateSupplyContract()
@@ -80,14 +79,14 @@ namespace ZR.Service.Business
             return Truncate();
         }
         /// <summary>
-        /// 导入合同管理
+        /// 导入合同
         /// </summary>
         /// <returns></returns>
         public (string, object, object) ImportSupplyContract(List<SupplyContract> list)
         {
             var x = Context.Storageable(list)
                 .SplitInsert(it => !it.Any())
-                .SplitError(x => x.Item.Id.IsEmpty(), "Id不能为空")
+                //.SplitError(x => x.Item.ContractCode.IsEmpty(), "合同编号不能为空")
                 //.WhereColumns(it => it.UserName)//如果不是主键可以这样实现（多字段it=>new{it.x1,it.x2}）
                 .ToStorage();
             var result = x.AsInsertable.ExecuteCommand();//插入可插入部分;
@@ -109,7 +108,7 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 导出合同管理
+        /// 导出合同
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
@@ -137,10 +136,8 @@ namespace ZR.Service.Business
             var predicate = Expressionable.Create<SupplyContract>();
 
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ContractCode), it => it.ContractCode == parm.ContractCode);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ContractDate), it => it.ContractDate == parm.ContractDate);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugId), it => it.DrugId == parm.DrugId);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.SupplierId), it => it.SupplierId == parm.SupplierId);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.States), it => it.States == parm.States);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ContractName), it => it.ContractName == parm.ContractName);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.SupplierName), it => it.SupplierName == parm.SupplierName);
             return predicate;
         }
     }

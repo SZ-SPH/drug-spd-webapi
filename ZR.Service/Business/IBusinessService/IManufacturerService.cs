@@ -11,6 +11,7 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<ManufacturerDto> GetList(ManufacturerQueryDto parm);
 
         Manufacturer GetInfo(int Id);
+        Manufacturer GetnNameInfo(string name);
 
 
         Manufacturer AddManufacturer(Manufacturer parm);

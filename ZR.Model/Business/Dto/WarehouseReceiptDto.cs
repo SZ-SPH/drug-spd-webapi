@@ -60,6 +60,9 @@ namespace ZR.Model.Business.Dto
         /// 发票
         /// </summary>
         public string InvoiceNumber { get; set; }
+        public string HisBuyCode { get; set; }
+        public string Mark { get; set; }
 
+        
     }
 }

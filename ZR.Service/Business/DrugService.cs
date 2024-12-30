@@ -30,6 +30,25 @@ namespace ZR.Service.Business
 
             return response;
         }
+        public PagedInfo<DrugDto> GYSGetList(GYSDrugQueryDto parm)
+        {
+            var predicate = QueryExp(parm);
+            var response = Queryable()
+           .InnerJoin<SupplyContractDrug>((it, d) => it.DrugCode == d.DrugCode)
+           .InnerJoin<SupplyContract>((it, d, s) => d.ContractCode == s.ContractCode)
+           .Where((it, d, s) =>
+               ((string.IsNullOrEmpty(parm.DrugName) || it.DrugName.Contains(parm.DrugName)) &&
+                (string.IsNullOrEmpty(parm.DrugCode) || it.DrugCode == parm.DrugCode) &&
+                (string.IsNullOrEmpty(parm.DrugMnemonicCode) || it.DrugMnemonicCode.Contains(parm.DrugMnemonicCode))) &&
+                (string.IsNullOrEmpty(parm.SupplierName) || s.SupplierName.Contains(parm.SupplierName))
+           )
+           .ToPage<Drug, DrugDto>(parm);
+
+
+
+
+            return response;
+        }
 
         public Drug GetListWithCondition(InWarehousingPdaDto parm)
         {
@@ -153,6 +172,15 @@ namespace ZR.Service.Business
         /// <param name="parm"></param>
         /// <returns></returns>
         private static Expressionable<Drug> QueryExp(DrugQueryDto parm)
+        {
+            var predicate = Expressionable.Create<Drug>();
+
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugName), it => it.DrugName.Contains(parm.DrugName));
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugMnemonicCode), it => it.DrugMnemonicCode.Contains(parm.DrugMnemonicCode));
+            return predicate;
+        }
+        private static Expressionable<Drug> QueryExp(GYSDrugQueryDto parm)
         {
             var predicate = Expressionable.Create<Drug>();
 

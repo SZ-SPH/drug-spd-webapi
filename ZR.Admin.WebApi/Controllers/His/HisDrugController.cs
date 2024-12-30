@@ -71,15 +71,12 @@ namespace ZR.Admin.WebApi.Controllers.His
 
             if (hisdrug == null)
             {
-                return BadRequest("历史仓库数据未找到。");
+                return BadRequest("历史数据未找到。");
             }
-
             if (drug == null)
             {
                 drug = new List<Drug>();
             }
-
-
             foreach (var hisDrugItem in hisdrug)
             {
                 // 查找 drug 中是否存在对应的 drugs_code
@@ -106,7 +103,7 @@ namespace ZR.Admin.WebApi.Controllers.His
                 {
                     var newWarehouse = new Drug
                     {
-                        HisID = hisDrugItem.iD,
+                    HisID = hisDrugItem.iD,
                     DrugCode = hisDrugItem.drugs_code,
                     DrugName = hisDrugItem.drugs_name,
                     DrugMnemonicCode = hisDrugItem.short_name,
@@ -126,7 +123,7 @@ namespace ZR.Admin.WebApi.Controllers.His
                 }
             }
 
-            return SUCCESS("");
+            return SUCCESS("true");
         }
     }
 }

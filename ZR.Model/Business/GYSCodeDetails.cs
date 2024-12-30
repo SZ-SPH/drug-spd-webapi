@@ -2,30 +2,27 @@
 namespace ZR.Model.Business
 {
     /// <summary>
-    /// 码信息
+    /// 送货单追溯码
     /// </summary>
-    [SugarTable("CodeDetails")]
-    public class CodeDetails
+    [SugarTable("GYSCodeDetails")]
+    public class GYSCodeDetails
     {
         /// <summary>
         /// Id 
         /// </summary>
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
-        /// 入库单id 
+        /// 送货单id 
         /// </summary>
-        public int? Receiptid { get; set; }
-        /// <summary>
-        /// 医嘱
-        /// </summary>
-        public int? MedicalAdviceId { get; set; }
+        public int? Deliveryid { get; set; }
+
         /// <summary>
         /// 药品id 
         /// </summary>
         [SugarColumn(ColumnName = "dRUG_ID")]
-        public int DrugId { get; set; }
+        public int? DrugId { get; set; }
 
         /// <summary>
         /// 追溯码 
@@ -68,37 +65,37 @@ namespace ZR.Model.Business
         public string Exprie { get; set; }
 
         /// <summary>
-        /// 药品id
+        /// 药品id 
         /// </summary>
         [SugarColumn(ColumnName = "drug_Ent_Base_Info_Id")]
         public string DrugEntBaseInfoId { get; set; }
 
         /// <summary>
-        /// 批准文号
+        /// 批准文号 
         /// </summary>
         [SugarColumn(ColumnName = "approval_Licence_No")]
         public string ApprovalLicenceNo { get; set; }
 
         /// <summary>
-        /// 包装规格
+        /// 包装规格 
         /// </summary>
         [SugarColumn(ColumnName = "pkg_Spec_Crit")]
         public string PkgSpecCrit { get; set; }
 
         /// <summary>
-        /// 剂型描述 
+        /// 制剂规格 
         /// </summary>
         [SugarColumn(ColumnName = "prepn_Spec")]
         public string PrepnSpec { get; set; }
 
         /// <summary>
-        /// 生产日期 
+        /// 剂型描述 
         /// </summary>
         [SugarColumn(ColumnName = "prepn_Type_Desc")]
         public string PrepnTypeDesc { get; set; }
 
         /// <summary>
-        /// 剂型描述 
+        /// 生产日期 
         /// </summary>
         [SugarColumn(ColumnName = "produce_Date_Str")]
         public string ProduceDateStr { get; set; }
@@ -121,16 +118,30 @@ namespace ZR.Model.Business
         [SugarColumn(ColumnName = "batch_No")]
         public string BatchNo { get; set; }
 
-        public int InWarehouseId { get; set; }
+        /// <summary>
+        /// 扫码入库时间 
+        /// </summary>
+        public string StorageTime { get; set; }
+
+        /// <summary>
+        /// 送货药品 
+        /// </summary>
+        public int? InDeliveryId { get; set; }
+
+        /// <summary>
+        /// 医嘱id 
+        /// </summary>
+        public int? MedicalAdviceId { get; set; }
 
         /// <summary>
         /// 发票号 
         /// </summary>
-        [SugarColumn(ColumnName = "invoiceCode")]
         public string InvoiceCode { get; set; }
-        public string ParentCode { get; set; }
-        public string storageTime { get; set; }
 
-        //ParentCode
+        /// <summary>
+        /// 父码 
+        /// </summary>
+        public string ParentCode { get; set; }
+
     }
 }

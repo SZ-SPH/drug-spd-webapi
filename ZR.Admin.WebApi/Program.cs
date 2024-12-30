@@ -134,7 +134,7 @@ if (builder.Environment.IsProduction())
 }
 //初始化字典数据
 app.UseInit();
-
+app.UseDeveloperExceptionPage();
 //使用swagger
 //app.UseSwagger();
 //启用客户端IP限制速率

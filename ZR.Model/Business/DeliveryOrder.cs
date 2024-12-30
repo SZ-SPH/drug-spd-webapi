@@ -10,43 +10,33 @@ namespace ZR.Model.Business
         /// <summary>
         /// Id 
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int Id { get; set; }
 
         /// <summary>
-        /// 备货单 
+        /// 备货单id 
         /// </summary>
-        public string StockId { get; set; }
+        public int? StockId { get; set; }
 
         /// <summary>
         /// 药品id 
         /// </summary>
-        public string DrugId { get; set; }
+        public int? DrugId { get; set; }
 
         /// <summary>
-        /// 送货药品 
+        /// 单据号 
         /// </summary>
-        public string DeliveryTime { get; set; }
+        public string BillCode { get; set; }
+
+        /// <summary>
+        /// 发票号 
+        /// </summary>
+        public string InvoiceNo { get; set; }
 
         /// <summary>
         /// 单据详情 
         /// </summary>
         public string DeliveryDetails { get; set; }
-
-        /// <summary>
-        /// 配送医院 
-        /// </summary>
-        public string DeliveryHospital { get; set; }
-
-        /// <summary>
-        /// 配送地址 
-        /// </summary>
-        public string DeliveryAddress { get; set; }
-
-        /// <summary>
-        /// 配送人 
-        /// </summary>
-        public string DeliveryPerson { get; set; }
 
         /// <summary>
         /// 备注 
@@ -61,7 +51,16 @@ namespace ZR.Model.Business
         /// <summary>
         /// 创建时间 
         /// </summary>
-        public string CreateTime { get; set; }
+        public DateTime? CreateTime { get; set; }
+
+        /// <summary>
+        /// 推送时间 
+        /// </summary>
+        public DateTime? PushTime { get; set; }
+        /// <summary>
+        /// 创建人
+        /// </summary>
+        public string CreatedBy { get; set; }
 
     }
 }

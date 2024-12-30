@@ -98,5 +98,9 @@ namespace ZR.Model.Business
         public string Minunit { get; set; }
 
 
+        public int? PackageRatio { get; set; }
+
+
+        public string PackageUnit { get; set; }
     }
 }

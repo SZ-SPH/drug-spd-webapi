@@ -104,6 +104,7 @@ namespace ZR.Model.Business.Dto
 
         public int InWarehouseId { get; set; }
         public string ParentCode { get; set; }
+        public string storageTime { get; set; }
 
     }
 
