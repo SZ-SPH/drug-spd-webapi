@@ -28,6 +28,6 @@ namespace ZR.Service.Business.IBusinessService
         List<CodeDetails> QueryPdaAdviceBindCodeList(CodeDetailsQueryDto parm);
         int PdaAdviceAddItem(CodeDetailsQueryDto parm);
         int PdaAdviceDeleteItem(string id);
-        void PdaAddCodeDetails(CodeDetailsDto codeDetailsDto);
+        string PdaAddCodeDetails(CodeDetailsDto codeDetailsDto);
     }
 }

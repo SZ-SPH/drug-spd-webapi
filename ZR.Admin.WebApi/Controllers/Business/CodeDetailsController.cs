@@ -165,8 +165,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [Log(Title = "PDA添加码信息", BusinessType = BusinessType.INSERT)]
         public IActionResult PdaAddCodeDetails([FromBody] CodeDetailsDto parm)
         {
-            _CodeDetailsService.PdaAddCodeDetails(parm);
-            return SUCCESS("true");
+            var res = _CodeDetailsService.PdaAddCodeDetails(parm);
+            return SUCCESS(res);
         }
 
 

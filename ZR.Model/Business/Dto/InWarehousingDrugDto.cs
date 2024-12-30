@@ -127,10 +127,8 @@ namespace ZR.Model.Business.Dto
         public string Minunit { get; set; }
 
         public int? PackageRatio { get; set; }
-
-
         public string PackageUnit { get; set; }
-   
-
+        public string Text { get; set; }
+        public string Content { get; set; }
     }
 }

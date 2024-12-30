@@ -4,6 +4,7 @@ using ZR.Model.Business.Dto;
 using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
+using Microsoft.AspNetCore.JsonPatch.Internal;
 
 namespace ZR.Service.Business
 {
@@ -82,6 +83,56 @@ namespace ZR.Service.Business
 
             return response;
         }
+
+        public int UpdatePdaInWarehousingDrug(InWarehousingDrugDto parm)
+        {
+            if ("药品入库数量".Equals(parm.Text))
+            {
+               int res = Context.Updateable<InWarehousing>()
+                    .SetColumns(it => it.InventoryQuantity == int.Parse(parm.Content))
+                    .Where(it => it.Id == parm.Id).ExecuteCommand();
+                return res;
+            }
+            else if ("药品批号".Equals(parm.Text))
+            {
+                int res = Context.Updateable<InWarehousing>()
+                    .SetColumns(it => it.BatchNumber == parm.Content)
+                    .Where(it => it.Id == parm.Id).ExecuteCommand();
+                return res;
+            }
+            else if ("有效期至".Equals(parm.Text))
+            {
+                int res = Context.Updateable<InWarehousing>()
+                    .SetColumns(it => it.Exprie == parm.Content)
+                    .Where(it => it.Id == parm.Id).ExecuteCommand();
+                return res;
+            }
+            else if ("价格".Equals(parm.Text))
+            {
+                int res = Context.Updateable<InWarehousing>()
+                    .SetColumns(it => it.Price == int.Parse(parm.Content))
+                    .Where(it => it.Id == parm.Id).ExecuteCommand();
+                return res;
+            }
+            else if ("货位号".Equals(parm.Text))
+            {
+                int res = Context.Updateable<InWarehousing>()
+                    .SetColumns(it => it.LocationNumber == parm.Content)
+                    .Where(it => it.Id == parm.Id).ExecuteCommand();
+                return res;
+            }
+            else if ("生产日期".Equals(parm.Text))
+            {
+                int res = Context.Updateable<InWarehousing>()
+                    .SetColumns(it => it.DateOfManufacture == parm.Content)
+                    .Where(it => it.Id == parm.Id).ExecuteCommand();
+                return res;
+            }
+            return -1;
+        }
+
+
+
 
         /// <summary>
         /// 查询导出表达式

@@ -778,6 +778,11 @@ namespace ZR.ServiceCore.Services
                     {
                         Path = "/pages/spd/scanList/index",
                         Meta = new Meta("扫码盘点", "scan")
+                    },
+                       new()
+                    {
+                        Path = "/pages/spd/scanTest/index",
+                        Meta = new Meta("扫码测试", "scan")
                     }
                 }
                 },

@@ -88,12 +88,16 @@ namespace ZR.Service.Business
             return Update(model, true);
         }
 
-        public void PdaAddCodeDetails(CodeDetailsDto codeDetailsDto)
+        public string PdaAddCodeDetails(CodeDetailsDto codeDetailsDto)
         {
             //溯源码
             string tracingCode = codeDetailsDto.Code;
             //根据溯源码获取下面的子码
             var codeList = Tools.CodeInOneWay(tracingCode);
+            if (codeList.Count == 0)
+            {
+                return "无法获取单据";
+            }
             Dictionary<string, object> codeInfoDict = codeList[0];
             //回补药品的数量，批号和生产日期
             Context.Updateable<InWarehousing>().SetColumns(it => new InWarehousing
@@ -216,6 +220,7 @@ namespace ZR.Service.Business
                 };
                 Context.Insertable<CodeDetails>(codeDetailFormat).ExecuteCommand();
             }
+            return "处理成功";
         }
 
         public int PdaAdviceDeleteItem(string id)
