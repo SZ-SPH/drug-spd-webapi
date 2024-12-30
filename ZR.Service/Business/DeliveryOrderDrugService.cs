@@ -23,9 +23,13 @@ namespace ZR.Service.Business
         {
             var predicate = QueryExp(parm);
 
-            var response = Queryable()
+            var response = Queryable().LeftJoin<VdrugsGYS>((it,t)=>it.Id==t.Ids)
                 //.OrderBy("Id asc")
                 .Where(predicate.ToExpression())
+                .Select((it, t) =>
+                new DeliveryOrderDrug {
+                    count=t.CodeCount
+                },true)
                 .ToPage<DeliveryOrderDrug, DeliveryOrderDrugDto>(parm);
 
             return response;

@@ -148,13 +148,26 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [ActionPermissionFilter(Permission = "gyscodedetails:import")]
         public IActionResult ImportData([FromForm(Name = "file")] IFormFile formFile)
         {
-            List<GYSCodeDetailsDto> list = new();
+            List<demoExport> list = new();
+            List<GYSCodeDetails> GYSlist = new();
+
             using (var stream = formFile.OpenReadStream())
             {
-                list = stream.Query<GYSCodeDetailsDto>(startCell: "A1").ToList();
+                list = stream.Query<demoExport>(startCell: "A1").ToList();
+            }
+            foreach (var item in list)
+            {
+                GYSCodeDetails gYS=new GYSCodeDetails();
+                gYS.Deliveryid = item.DeliveyId;
+                gYS.InDeliveryId = item.DeliveyDrugId;
+                gYS.DrugId = item.DrugId;
+                gYS.Code = item.GYSCode;
+                gYS.PackageLevel = item.GYSCodeLever;
+                GYSlist.Add(gYS);
             }
 
-            return SUCCESS(_GYSCodeDetailsService.ImportGYSCodeDetails(list.Adapt<List<GYSCodeDetails>>()));
+
+            return SUCCESS(_GYSCodeDetailsService.ImportGYSCodeDetails(GYSlist.Adapt<List<GYSCodeDetails>>()));
         }
 
         /// <summary>

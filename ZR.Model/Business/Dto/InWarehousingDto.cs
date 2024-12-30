@@ -22,6 +22,7 @@ namespace ZR.Model.Business.Dto
         [ExcelColumn(Name = "id")]
         [ExcelColumnName("id")]
         public int Id { get; set; }
+        public int Mixqty { get; set; }
 
         [ExcelColumn(Name = "药品id")]
         [ExcelColumnName("药品id")]

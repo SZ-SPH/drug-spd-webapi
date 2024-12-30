@@ -8,6 +8,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web;
 
 namespace Infrastructure.Controllers
@@ -176,6 +177,27 @@ namespace Infrastructure.Controllers
             MiniExcel.SaveAs(fullPath, list, sheetName: sheetName);
             return (sFileName, fullPath);
         }
+
+        protected (string, string) ExportExcelMinis<T>(T list, string sheetName, string fileName)
+        {
+            IWebHostEnvironment webHostEnvironment = (IWebHostEnvironment)App.ServiceProvider.GetService(typeof(IWebHostEnvironment));
+            string sFileName = $"{fileName}{DateTime.Now:MM-dd-HHmmss}.xlsx";
+            string fullPath = Path.Combine(webHostEnvironment.WebRootPath, "export", sFileName);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+            // 模板路径
+            string templatePath = Path.Combine(webHostEnvironment.WebRootPath, sheetName);
+
+            // 使用模板保存数据
+            MiniExcel.SaveAsByTemplate(fullPath, templatePath, list);
+
+
+            return (sFileName, fullPath);
+        }
+
+
+        // 定义列格式
+
 
         /// <summary>
         /// 导出多个工作表(Sheet)

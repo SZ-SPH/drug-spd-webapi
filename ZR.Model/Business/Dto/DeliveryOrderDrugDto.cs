@@ -18,8 +18,10 @@ namespace ZR.Model.Business.Dto
     /// </summary>
     public class DeliveryOrderDrugDto
     {
-        
-        [ExcelColumn(Name = "Id")]
+        public int Mixqty { get; set; }
+
+        public int count {  get; set; }
+    [ExcelColumn(Name = "Id")]
         [ExcelColumnName("Id")]
         public int Id { get; set; }
 

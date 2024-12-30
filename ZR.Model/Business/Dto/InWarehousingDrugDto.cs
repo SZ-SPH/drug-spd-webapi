@@ -31,6 +31,7 @@ namespace ZR.Model.Business.Dto
         [ExcelColumnName("id")]
         //[SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int Id { get; set; }
+        public int Mixqty { get; set; }
 
         /// <summary>
         /// 药品id 
@@ -129,5 +130,7 @@ namespace ZR.Model.Business.Dto
 
 
         public string PackageUnit { get; set; }
+   
+
     }
 }

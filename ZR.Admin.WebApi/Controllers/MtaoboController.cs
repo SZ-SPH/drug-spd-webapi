@@ -268,8 +268,10 @@ namespace ZR.Admin.WebApi.Controllers
                     else if (res.Result.ModelList == null)
                     {
                         string msg = AddOutBill(ModelState[i].Code);
+                        
                         if (msg == "调用成功")
                         {
+                             Task.Delay(5000);
                             return MChange(response, resultList);      
                         }
                     }
@@ -297,64 +299,7 @@ namespace ZR.Admin.WebApi.Controllers
             return str;
         }
 
-        //public object MChange(AlibabaAlihealthDrugtraceTopYljgQueryCodedetailResponse response)
-        //{
-        //    var modelState = response.Result.Models;
-
-        //    foreach (var model in modelState)
-        //    {
-        //        if (model.PackageLevel == "3" || model.PackageLevel == "2")
-        //        {
-        //            var relationResponse = relation(model.Code);
-        //            if (relationResponse.Result.ModelList != null)
-        //            {
-        //                foreach (var item in relationResponse.Result.ModelList)
-        //                {
-        //                    var code = GetCodeFromRelations((List<AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo>)item.CodeRelationList);
-        //                    if (code != null)
-        //                    {
-        //                        var request = CreateRequest(code);
-        //                        return MChange(apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request));
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                string msg = AddOutBill(model.Code);
-        //                if (msg == "调用成功")
-        //                {
-        //                    return MChange(response);
-        //                }
-        //            }
-        //        }
-        //        else if (model.PackageLevel == "1")
-        //        {
-        //            return ""; // 如果需要处理PackageLevel为1的逻辑
-        //        }
-        //    }
-        //    return ""; // 返回空字符串，表示没有匹配的情况
-        //}
-
-        //private string GetCodeFromRelations(List<AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo> relations)
-        //{
-        //    foreach (var relation in relations)
-        //    {
-        //        if (relation.CodePackLevel == "2")
-        //        {
-        //            return relation.Code;
-        //        }
-        //    }
-        //    return null; // 如果没有找到符合条件的代码，返回null
-        //}
-
-        //private AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest CreateRequest(string code)
-        //{
-        //    return new AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest
-        //    {
-        //        RefEntId = Ref_id,
-        //        Codes = new List<string> { code }
-        //    };
-        //}
+       
 
         [HttpGet]
         public AlibabaAlihealthDrugtraceTopYljgQueryRelationResponse relation(string code)

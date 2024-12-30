@@ -12,7 +12,9 @@ namespace ZR.Model.Business
         /// </summary>
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int Id { get; set; }
+        public int Mixqty { get; set; }
 
+        
         /// <summary>
         /// 送货单 
         /// </summary>
@@ -67,5 +69,15 @@ namespace ZR.Model.Business
         public string PackageUnit { get; set; }
         public string Exprie { get; set; }
         public string DateOfManufacture { get; set; }
+        public int count { get; set; }
+
+    }
+
+    [SugarTable("VDrugsGYS")]
+
+    public class VdrugsGYS
+    {
+        public int Ids { get; set; }
+        public int CodeCount { get; set; }
     }
 }

@@ -70,4 +70,38 @@ namespace ZR.Model.Business.Dto
 
 
     }
+
+
+
+    public  class demoExport
+    {
+        [ExcelColumn(Name = "送货单Id",Width = 10)]
+        [ExcelColumnName("送货单Id")]
+        public int DeliveyId { get; set; }
+        [ExcelColumn(Name = "送货单单据号", Width = 20)]
+        [ExcelColumnName("送货单单据号")]
+        public string DeliveyBilltime { get; set; }
+        [ExcelColumn(Name = "送货药品id", Width = 15)]
+        [ExcelColumnName("送货药品id")]
+        public int? DeliveyDrugId { get; set; }
+        [ExcelColumn(Name = "药品id", Width = 15)]
+        [ExcelColumnName("药品id")]
+        public int? DrugId { get; set; }
+
+        [ExcelColumn(Name = "药品名称", Width = 20)]
+        [ExcelColumnName("药品名称")]
+        public string DrugName { get; set; }
+
+        [ExcelColumn(Name = "药品编号", Width = 20)]
+        [ExcelColumnName("药品编号")]
+        public string DrugCode { get; set; }
+
+        [ExcelColumn(Name = "追溯码", Width = 20)]
+        [ExcelColumnName("追溯码")]
+        public string GYSCode { get; set; }
+        [ExcelColumn(Name = "追溯码等级（1:小码,2:中码,3:大码）", Width = 10)]
+        [ExcelColumnName("追溯码等级（1:小码,2:中码,3:大码）")]
+        public string GYSCodeLever { get; set; }
+
+    }
 }

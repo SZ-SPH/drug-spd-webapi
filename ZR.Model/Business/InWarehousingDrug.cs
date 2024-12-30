@@ -19,7 +19,7 @@ namespace ZR.Model.Business
         /// </summary>
         [SugarColumn(ColumnName = "dRUG_ID")]
         public int? DrugId { get; set; }
-
+        public int Mixqty { get; set; }
         /// <summary>
         /// 药品编码 
         /// </summary>

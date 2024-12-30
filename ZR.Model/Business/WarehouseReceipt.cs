@@ -12,7 +12,7 @@ namespace ZR.Model.Business
         /// </summary>
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true, ColumnName = "rECEIPT_ID")]
         public int ReceiptId { get; set; }
-
+        public string Decode { get; set; }
         /// <summary>
         /// 入库单编号 
         /// </summary>

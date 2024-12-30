@@ -8,6 +8,9 @@ using ZR.Model.System;
 using ZR.Model;
 using SqlSugar;
 using MapsterMapper;
+using System.Configuration;
+using static ZR.Admin.WebApi.Controllers.Business.DeliveryOrderController;
+using Aliyun.OSS;
 
 //创建时间：2024-12-03
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -208,6 +211,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
             foreach (var deid in Deids)
             {
                 DeliveryOrder deliveryOrder = _DeliveryOrderService.GetInfo(deid);
+                if (deliveryOrder.States == "已推送")
+                {
+                    continue;
+                }
                 List<DeliveryOrderDrug> deliveryOrderDrug = _DeliveryOrderDrugService.DrugGetList(deid);
                 if (deliveryOrderDrug == null || deliveryOrderDrug.Count<=0)
                 {
@@ -228,6 +235,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 warehouseReceipt.ModifiedBy = user.NickName;
                 warehouseReceipt.State = "未推送";
                 warehouseReceipt.Mark = $"由{user.NickName}推送，送货单为{deliveryOrder.BillCode}";
+                warehouseReceipt.Decode = deliveryOrder.BillCode;
                 var modal = warehouseReceipt.Adapt<WarehouseReceipt>().ToCreate(HttpContext);
                 var response = _WarehouseReceiptService.AddWarehouseReceipt(modal);
 
@@ -244,10 +252,11 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     inWarehousing.ManufacturerId = item.Manufacturer;
                     inWarehousing.Exprie = item.Exprie;
                     inWarehousing.Price = item.UnitPrice;
-                    inWarehousing.DateOfManufacture = item.Manufacturer;
+                    inWarehousing.DateOfManufacture = item.DateOfManufacture;
                     inWarehousing.Minunit = item.Minunit;
                     inWarehousing.PackageRatio = item.PackageRatio;
-                    inWarehousing.PackageUnit = item.PackageUnit;
+                    inWarehousing.PackageUnit = item.PackageUnit;                  
+
                     var Inmodal = inWarehousing.Adapt<InWarehousing>().ToCreate(HttpContext);
                     var Inresponse = _InWarehousingService.AddInWarehousing(Inmodal);
                     List<GYSCodeDetails> gYSCodeDetails = _GYSCodeDetailsService.CodeGetList(deliveryOrder.Id,item.Id);
@@ -259,6 +268,9 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     }
 
                 }
+                deliveryOrder.States = "已推送";
+                var des=deliveryOrder.Adapt<DeliveryOrder>().ToUpdate(HttpContext);
+               _DeliveryOrderService.UpdateDeliveryOrder(des);
             }
             return SUCCESS("true");
         }
@@ -298,5 +310,62 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return invoiceNumber;
         }
 
+
+
+        //传入 送货单id 通过 送货单 -- 获取药品 下载输出对应的文件 
+        /// <summary>
+        /// 导出送货单
+        /// </summary>
+        /// <returns></returns>
+        [Log(Title = "送货单", BusinessType = BusinessType.EXPORT, IsSaveResponseData = false)]
+        [HttpGet("DemoExport")]
+        [ActionPermissionFilter(Permission = "deliveryorder:export")]
+        public IActionResult DemoExport([FromQuery] List<int> parm)
+        {
+            List<adds> adds = new List<adds>();
+            List<demoExport> demoExports = new List<demoExport>();
+            foreach (var item in parm)
+            {
+                adds adds1 = new adds();
+                adds1.dd = new List<demoExport>();
+               var p = _DeliveryOrderService.GetInfo(item);
+               var n=_DeliveryOrderDrugService.DrugGetList(item);          
+                foreach (var dr in n)
+                {
+                demoExport demo = new demoExport();
+                demo.DeliveyId = item;
+                demo.DeliveyBilltime = p.BillCode;
+                demo.DeliveyDrugId= dr.Id;
+                demo.DrugId = dr.DrugId;
+                demo.DrugName = dr.DrugName;
+                demo.DrugCode=dr.DrugCode;
+                demo.GYSCode = "";
+                demo.GYSCodeLever = "1";
+                demoExports.Add(demo);
+                adds1.dd.Add(demo);
+                adds.Add(adds1);
+                }
+            }
+
+
+      
+            if (demoExports == null || demoExports.Count <= 0)
+            {
+                return ToResponse(ResultCode.FAIL, "没有要导出的数据");
+            }
+            var value = new
+            {
+                a = new[] {
+                        demoExports,                     
+                    }
+            };
+
+            var result = ExportExcelMinis(adds[0], "送货单模板.xlsx", "送货单模板");
+            return ExportExcel(result.Item2, result.Item1);
+        }
+        public class adds
+        {
+            public List<demoExport> dd {get;set;}   
+        }
     }
 }

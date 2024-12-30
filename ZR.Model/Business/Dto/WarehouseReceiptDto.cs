@@ -21,6 +21,8 @@ namespace ZR.Model.Business.Dto
     /// </summary>
     public class WarehouseReceiptDto
     {
+
+        public string Decode { get; set; }
         [Required(ErrorMessage = "入库单id不能为空")]
         [ExcelColumn(Name = "入库单id")]
         [ExcelColumnName("入库单id")]

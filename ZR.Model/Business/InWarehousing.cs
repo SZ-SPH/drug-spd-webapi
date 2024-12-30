@@ -92,6 +92,7 @@ namespace ZR.Model.Business
         //[ExcelColumn(Name = "包装单位")]
         //[ExcelColumnName("包装单位")]
         public string PackageUnit { get; set; }
+        public int Mixqty { get; set; }
 
 
     }
