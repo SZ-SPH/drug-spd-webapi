@@ -1,4 +1,6 @@
 
+using System.Runtime.CompilerServices;
+
 namespace ZR.Model.Business
 {
     /// <summary>
@@ -94,6 +96,25 @@ namespace ZR.Model.Business
         public string PackageUnit { get; set; }
         public int Mixqty { get; set; }
 
+
+    }
+
+
+
+
+    public class IsBoolInware
+    {
+        public string supName {  get; set; }    
+        public string deptName {  get; set; }
+        public string maunName { get; set; }
+
+        public string DrugName {get; set;}
+
+        public string DrugCode { get; set;}
+        public decimal? Price { get; set; }
+        public decimal HisPrice { get; set; }
+        public string RepeiceCode {  get; set; }
+        public int InventoryQuantity { get; set; }
 
     }
 }

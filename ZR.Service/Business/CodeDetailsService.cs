@@ -11,6 +11,7 @@ using Topsdk.Top.Ability2940.Domain;
 using Topsdk.Top.Ability2940.Response;
 using Microsoft.Extensions.Logging;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using Microsoft.AspNetCore.Http;
 
 namespace ZR.Service.Business
 {
@@ -175,6 +176,22 @@ namespace ZR.Service.Business
                     CodeDetailList.Add(CodeDetailItem);
                 });
                 Context.Insertable<CodeDetails>(CodeDetailList).ExecuteCommand();
+                var drs = Context.Queryable<Drug>().Where(dr => dr.DrugId == CodeDetailList[0].DrugId);
+                if (drs != null)
+                {
+                    if (string.IsNullOrEmpty(drs.ToList()[0].RefCode))
+                    {
+                        drs.ToList()[0].RefCode = CodeDetailList[0].Code.Trim().Substring(0, 7);
+                        Context.Updateable<Drug>(drs);
+                        Context.Updateable<Drug>().SetColumns(it => new Drug
+                        {
+                            RefCode = drs.ToList()[0].RefCode,
+                        })
+              .Where(it => it.DrugId == CodeDetailList[0].DrugId)
+              .ExecuteCommand();
+
+                    }
+                }
             }
             else
             {
@@ -216,10 +233,28 @@ namespace ZR.Service.Business
                     BatchNo = codeInfoDict["batch_no"].ToString(),
                     //入库ID
                     InWarehouseId = codeDetailsDto.InWarehouseId,
+                    PackageLevel = "1",
                     MedicalAdviceId = 0,
                 };
                 Context.Insertable<CodeDetails>(codeDetailFormat).ExecuteCommand();
+                var drs = Context.Queryable<Drug>().Where(dr => dr.DrugId == codeDetailFormat.DrugId);
+                if (drs != null)
+                {
+                    if (string.IsNullOrEmpty(drs.ToList()[0].RefCode))
+                    {
+                        drs.ToList()[0].RefCode = codeDetailFormat.Code.Trim().Substring(0, 7);
+                        Context.Updateable<Drug>(drs);
+                        Context.Updateable<Drug>().SetColumns(it => new Drug
+                        {
+                            RefCode = drs.ToList()[0].RefCode,
+                        })
+              .Where(it => it.DrugId == codeDetailFormat.DrugId)
+              .ExecuteCommand();
+
+                    }
+                }
             }
+
             return "处理成功";
         }
 

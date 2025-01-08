@@ -13,7 +13,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
     /// <summary>
     /// 码信息
     /// </summary>
-    [Verify]
+    //[Verify]
+    [AllowAnonymous]
     [Route("business/CodeDetails")]
     public class CodeDetailsController : BaseController
     {
@@ -134,7 +135,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 //当执行成功后 去药品表 修改 绑定 ref_code
                if (response != null)
                 {
-                    if (response.PackageLevel == "1" && !string.IsNullOrEmpty(response.ParentCode))
+                    if (response.PackageLevel == "1")
                     {
                         //获取药品
                         int id = (int)response.DrugId;
@@ -161,7 +162,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// <param name="parm"></param>
         /// <returns></returns>
         [HttpPost("pdaRelateAdd")]
-        [ActionPermissionFilter(Permission = "codedetails:add")]
+        //[ActionPermissionFilter(Permission = "codedetails:add")]
         [Log(Title = "PDA添加码信息", BusinessType = BusinessType.INSERT)]
         public IActionResult PdaAddCodeDetails([FromBody] CodeDetailsDto parm)
         {

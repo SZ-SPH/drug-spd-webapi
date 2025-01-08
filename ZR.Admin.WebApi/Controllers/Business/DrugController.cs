@@ -34,6 +34,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [ActionPermissionFilter(Permission = "drug:list")]
         public IActionResult QueryDrug([FromQuery] DrugQueryDto parm)
         {
+          
             var response = _DrugService.GetList(parm);
             return SUCCESS(response);
         }

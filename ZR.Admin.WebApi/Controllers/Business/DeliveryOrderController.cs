@@ -11,6 +11,9 @@ using MapsterMapper;
 using System.Configuration;
 using static ZR.Admin.WebApi.Controllers.Business.DeliveryOrderController;
 using Aliyun.OSS;
+using System;
+using ZR.Service.Business;
+using System.IO;
 
 //创建时间：2024-12-03
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -32,16 +35,18 @@ namespace ZR.Admin.WebApi.Controllers.Business
         private readonly IInWarehousingService _InWarehousingService;
         private readonly IWarehouseReceiptService _WarehouseReceiptService;
         private readonly ICodeDetailsService _CodeDetailsService;
-
+        private readonly IManufacturerService _ManufacturerService;
+      
         private readonly ISupplierService _SupplierService;
 
         private readonly ISysUserService _SysUserService;
 
+        private readonly IDrugService _DrugService;
 
 
         public DeliveryOrderController(IDeliveryOrderService DeliveryOrderService, IInWarehousingService inWarehousingService, IWarehouseReceiptService WarehouseReceiptService
          , ICodeDetailsService codeDetailsService, IGYSCodeDetailsService gYSCodeDetailsService, IDeliveryOrderDrugService deliveryOrderDrugService, ISupplierService supplierService,
-              ISysUserService sysUserService)
+              ISysUserService sysUserService, IManufacturerService manufacturerService, IDrugService drugService)
         {
 
             _DeliveryOrderService = DeliveryOrderService;
@@ -52,7 +57,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
             _CodeDetailsService = codeDetailsService;
             _SupplierService = supplierService;
             _SysUserService = sysUserService;
-
+            _ManufacturerService = manufacturerService;
+            _DrugService = drugService;
         }
 
         /// <summary>
@@ -94,13 +100,24 @@ namespace ZR.Admin.WebApi.Controllers.Business
         public IActionResult AddDeliveryOrder([FromBody] DeliveryOrderDto parm)
         {
             parm.PushTime = new DateTime(1900, 1, 1, 00, 00, 00);
+            parm.BillCode = GenerateInvoiceNumbers();
             var modal = parm.Adapt<DeliveryOrder>().ToCreate(HttpContext);
 
             var response = _DeliveryOrderService.AddDeliveryOrder(modal);
 
             return SUCCESS(response);
         }
-
+        public string GenerateInvoiceNumbers()
+        {
+            // 获取当前日期，格式为 YYYYMMDD
+            string currentDate = DateTime.Now.ToString("yyyyMMdd");
+            var num = _WarehouseReceiptService.GetCode().Count;
+            // 增加流水号
+            // 获取当前日期的流水号
+            // 生成单据编号，格式为 YYYYMMDD-XXX
+            string invoiceNumber = $"SHD{currentDate}{num++:D3}";
+            return invoiceNumber;
+        }
         /// <summary>
         /// 更新送货单
         /// </summary>
@@ -197,6 +214,24 @@ namespace ZR.Admin.WebApi.Controllers.Business
             var result = DownloadImportTemplate(new List<DeliveryOrderDto>() { }, "DeliveryOrder");
             return ExportExcel(result.Item2, result.Item1);
         }
+        [HttpGet("ModeMa")]
+
+        public IActionResult ModeMa([FromQuery] int parm)
+        {
+            //改为 获取到药品 id 
+            var drug = _DrugService.GetInfo(parm);
+            
+            //string str = row.manufacturer;
+            string[] parts = drug.ProduceName.Split(',');
+            List<Manufacturer> response =new();
+            foreach (var item in parts)
+            {
+                response.Add(_ManufacturerService.GetnNameInfo(item));
+            }
+            //_ManufacturerService.GetnNameInfo(parm);
+
+            return SUCCESS(response);
+        }
 
         /// <summary>
         /// 推送同步按钮 
@@ -269,7 +304,9 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
                 }
                 deliveryOrder.States = "已推送";
-                var des=deliveryOrder.Adapt<DeliveryOrder>().ToUpdate(HttpContext);
+                deliveryOrder.PushTime = DateTime.Now;
+
+                var des =deliveryOrder.Adapt<DeliveryOrder>().ToUpdate(HttpContext);
                _DeliveryOrderService.UpdateDeliveryOrder(des);
             }
             return SUCCESS("true");

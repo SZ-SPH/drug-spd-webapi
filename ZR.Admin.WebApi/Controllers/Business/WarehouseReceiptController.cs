@@ -116,8 +116,40 @@ namespace ZR.Admin.WebApi.Controllers.Business
             string invoiceNumber = $"RKD{currentDate}{num++:D3}";
             return invoiceNumber;
         }
+        [HttpGet("IsTrue")]
+        public IActionResult IsTrue([FromQuery(Name = "parm[]")] List<int> parm)
+        {
+            List<IsBoolInware> list = new List<IsBoolInware>();
+            foreach (var item in parm)
+            {
+                var refs = _WarehouseReceiptService.GetInfo(item);
+                var sup=_SupplierService.GetInfo((int)refs.SupplierId);
+                var response = _InWarehousingService.inGetList(item);
 
+                if (!string.IsNullOrEmpty(refs.Decode)) {
+                foreach (var res in response)
+                {
+                    IsBoolInware isBoolInware= new IsBoolInware();  
+                    var drugs = _IDrugService.GetInfo(res.DrugId);
+                    if (drugs.HisPrice!=res.Price)
+                    {
+                        isBoolInware.DrugName = drugs.DrugName;
+                        isBoolInware.DrugCode =res.DrugCode;
+                        isBoolInware.Price =res.Price;
+                        isBoolInware.HisPrice =drugs.HisPrice;
+                        isBoolInware.RepeiceCode =refs.ReceiptCode;
+                        isBoolInware.maunName = res.ManufacturerId;
+                        isBoolInware.supName = sup.SupplierName;
+                        list.Add(isBoolInware);
+                    }
+                  }
+                }
+            }
 
+            return SUCCESS(list);
+
+        }
+         
 
         /// <summary>
         /// 确认收货入库
@@ -147,16 +179,13 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 foreach (var item in response)
                 {
                     var drugs=_IDrugService.GetInfo(item.DrugId);
-                    var Manu = _ManufacturerService.GetnNameInfo(item.ManufacturerId);
-
+                    var Manu = _ManufacturerService.GetnNameInfo(item.ManufacturerId);                    
                     var medItem = new MedItem
                     {
                         Drug_Id = drugs.HisID,
                         Qty = item.InventoryQuantity.ToString(),
                         Batch_No = item.BatchNumber,
-                        Indate = !string.IsNullOrEmpty(item.Exprie) ?
-    DateTime.ParseExact(item.Exprie, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd") :
-    null,
+                        Indate = item.Exprie,
                         Prod_Date = item.DateOfManufacture?.ToString(),
                         Manufacturer_Id = Manu.HisId,
                         Price = item.Price?.ToString()
