@@ -22,5 +22,6 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<InWarehousingDto> ExportList(InWarehousingQueryDto parm);
 
         List<InWarehousing> inGetList(int Id);
+        int UpdateManufacture(InWarehousingDto param);
     }
 }

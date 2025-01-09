@@ -6,6 +6,7 @@ using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
 using ZR.Common;
 using Topsdk.Top.Ability2940.Domain;
+using Newtonsoft.Json.Linq;
 
 namespace ZR.Service.Business
 {
@@ -56,7 +57,7 @@ namespace ZR.Service.Business
             List<Dictionary<string, object>> list = Tools.CodeInOneWay(parm.TracingSourceCode);
             if (list.Count != 0)
             {
-                Dictionary<string, object> dict = Tools.CodeInOneWay(parm.TracingSourceCode).ElementAtOrDefault(0);
+                Dictionary<string, object> dict = list.ElementAtOrDefault(0);
                 if (dict.ContainsKey("sub_code"))
                 {
                     var value = (List<AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo>)dict["sub_code"];
@@ -169,6 +170,28 @@ namespace ZR.Service.Business
                 .ToPage(parm);
 
             return response;
+        }
+
+
+        public int TopSevenBind(InWarehousingDto param)
+        {
+            List<Dictionary<string, object>> list = Tools.CodeInOneWay(param.TracingSourceCode);
+            if (list.Count != 0)
+            {
+                Dictionary<string, object> drugInfoDict = list[0];
+                var topSevenCode = "";
+                if (drugInfoDict.ContainsKey("sub_code"))
+                {
+                    var subCodeList = (List<AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo>)drugInfoDict["sub_code"];
+                    topSevenCode = subCodeList.Where(x => x.CodePackLevel == "1").First().Code.Substring(0, 7);
+                }
+                else
+                {
+                    topSevenCode = drugInfoDict["code"].ToString().Substring(0, 7);
+                }
+                return Context.Updateable<Drug>().SetColumns(it => it.RefCode == topSevenCode).Where(it => it.DrugId == param.DrugId).ExecuteCommand();
+            }
+            return -1;
         }
 
         /// <summary>

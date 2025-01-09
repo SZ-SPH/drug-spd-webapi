@@ -79,6 +79,25 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return SUCCESS(info);
         }
 
+        [HttpPost("TopSevenBind")]
+        [ActionPermissionFilter(Permission = "inwarehousing:add")]
+        [Log(Title = "入库信息", BusinessType = BusinessType.INSERT)]
+        public IActionResult TopSevenBind([FromBody] InWarehousingDto param)
+        {
+            int value = _DrugService.TopSevenBind(param);
+            return SUCCESS(value != 0 ? "处理成功" : "处理失败");
+        }
+
+        [HttpPut("manufacture")]
+        [ActionPermissionFilter(Permission = "inwarehousing:edit")]
+        [Log(Title = "入库信息", BusinessType = BusinessType.INSERT)]
+        public IActionResult UpdateManufacture([FromBody] InWarehousingDto param)
+        {
+            int value = _InWarehousingService.UpdateManufacture(param);
+            return SUCCESS(value != 0 ? "处理成功" : "处理失败");
+        }
+
+
         /// <summary>
         /// 添加入库信息
         /// </summary>

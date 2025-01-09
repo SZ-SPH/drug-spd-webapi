@@ -244,6 +244,23 @@ namespace ZR.Common
             return totalResponse;
         }
 
+        /// <summary>
+        /// 获取单据状态
+        /// </summary>
+        /// <returns></returns>
+        public static AlibabaAlihealthDrugtraceTopYljgQueryBillstatusResponse GetBillStatus()
+        {
+            var request = new AlibabaAlihealthDrugtraceTopYljgQueryBillstatusRequest();
+            request.RefEntId = (string?)Getentinfo("佛山市南海区第五人民医院(佛山市南海区大沥医院)");
+            request.BeginDate = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd");
+            request.EndDate = DateTime.Now.ToString("yyyy-MM-dd");
+            request.BillType = "A";
+            request.Page = 1;
+            request.PageSize = 50;
+            var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryBillstatus(request);
+            return response;
+        }
+
 
         private static List<Dictionary<string, object>> GetSubCodesInfoByCode(AlibabaAlihealthDrugtraceTopYljgQueryCodedetailResponse response)
         {
@@ -263,11 +280,11 @@ namespace ZR.Common
                     //批号
                     itemDict.Add("batch_no", currentProductInfo.BatchNo);
                     //有效到期
-                    itemDict.Add("exipre_date", currentProductInfo.ExpireDate);
+                    itemDict.Add("exipre_date", DateTime.TryParse(currentProductInfo.ExpireDate, out DateTime expireDate) ? expireDate.ToString("yyyy-MM-dd") : "");
                     //生产日期
-                    itemDict.Add("produce_date", currentProductInfo.ProduceDateStr);
+                    itemDict.Add("produce_date", DateTime.TryParse(currentProductInfo.ProduceDateStr, out DateTime produceDateStr) ? produceDateStr.ToString("yyyy-MM-dd") : "");
                     //有效到
-                    itemDict.Add("expire", item.DrugEntBaseDTO.Exprie);
+                    itemDict.Add("expire", DateTime.TryParse(item.DrugEntBaseDTO.Exprie, out DateTime expire) ? expire.ToString("yyyy-MM-dd") : "");
                     //许可证号
                     itemDict.Add("license_no", item.DrugEntBaseDTO.ApprovalLicenceNo);
                     //药品ID
@@ -293,17 +310,20 @@ namespace ZR.Common
                         AlibabaAlihealthDrugtraceTopYljgQueryRelationResponse relationRes = relation(item.Code);
                         if (relationRes != null)
                         {
-                            var codeRelationList = relationRes.Result.ModelList[0].CodeRelationList;
-                            var formatRelationList = codeRelationList.Where(x => x.CodePackLevel == "1").ToList();
-                            itemDict.Add("sub_code", formatRelationList);
-                        }
-                        else if (relationRes == null)
-                        {
-                            var dict = AddOutBill(item.Code);
-                            var msg = dict.GetValueOrDefault("msg").ToString();
-                            if (msg == "调用成功")
+                            if (relationRes.Result.ResponseSuccess == true)
                             {
-                                return GetSubCodesInfoByCode(response);
+                                var codeRelationList = relationRes.Result.ModelList[0].CodeRelationList;
+                                var formatRelationList = codeRelationList.Where(x => x.CodePackLevel == "1").ToList();
+                                itemDict.Add("sub_code", formatRelationList);
+                            }
+                            else if (relationRes.Result.ResponseSuccess == false)
+                            {
+                                var dict = AddOutBill(item.Code);
+                                var msg = dict.GetValueOrDefault("msg").ToString();
+                                if (msg == "调用成功")
+                                {
+                                    return GetSubCodesInfoByCode(response);
+                                }
                             }
                         }
                     }

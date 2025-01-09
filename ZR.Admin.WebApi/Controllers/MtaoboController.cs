@@ -20,6 +20,7 @@ using NETCore.Encrypt.Internal;
 using Org.BouncyCastle.Tls;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace ZR.Admin.WebApi.Controllers
 {
@@ -63,6 +64,17 @@ namespace ZR.Admin.WebApi.Controllers
 
             var response = _SourceTracingService.AddSourceTracing(modal);
 
+            return SUCCESS(response);
+        }
+
+        /// <summary>
+        /// 获取单据状态
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult GetBillStatu()
+        {
+            var response = Tools.GetBillStatus();
             return SUCCESS(response);
         }
 
@@ -142,8 +154,9 @@ namespace ZR.Admin.WebApi.Controllers
             request.Codes = code;
             var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request);
             var resultList = new List<Vcodes>();
-            var f = MChange(response, resultList);
-            return SUCCESS(f);
+            //var f = MChange(response, resultList);
+            var f = (List<Dictionary<string, object>>)GetSubCodesInfoByCode(response);
+            return SUCCESS(f[0].GetValueOrDefault("sub_code"));
         }
 
         [HttpGet]
@@ -189,27 +202,30 @@ namespace ZR.Admin.WebApi.Controllers
                     //批号
                     itemDict.Add("batch_no", currentProductInfo.BatchNo);
                     //有效到期
-                    itemDict.Add("exipre_date", currentProductInfo.ExpireDate);
+                    itemDict.Add("exipre_date", DateTime.TryParse(currentProductInfo.ExpireDate, out DateTime expireDate) ? expireDate.ToString("yyyy-MM-dd") : "");
                     //生产日期
-                    itemDict.Add("produce_date", currentProductInfo.ProduceDateStr);
+                    itemDict.Add("produce_date", DateTime.TryParse(currentProductInfo.ProduceDateStr, out DateTime produceDateStr) ? produceDateStr.ToString("yyyy-MM-dd") : "");
                     //有效到
-                    itemDict.Add("expire", item.DrugEntBaseDTO.Exprie);
+                    itemDict.Add("expire", DateTime.TryParse(item.DrugEntBaseDTO.Exprie, out DateTime expire) ? expire.ToString("yyyy-MM-dd") : "");
                     //中码或者大码
                     if (item.PackageLevel.Equals("2") || item.PackageLevel.Equals("3"))
                     {
                         AlibabaAlihealthDrugtraceTopYljgQueryRelationResponse relationRes = relation(item.Code);
                         if(relationRes != null)
                         {
-                            var codeRelationList = relationRes.Result.ModelList[0].CodeRelationList;
-                            var formatRelationList = codeRelationList.Where(x => x.CodePackLevel == "1").ToList();
-                            itemDict.Add("sub_code", formatRelationList);
-                        }
-                        else if(relationRes == null)
-                        {
-                            string msg = AddOutBill(item.Code);
-                            if (msg == "调用成功")
+                            if (true == relationRes.Result.ResponseSuccess) 
                             {
-                                return GetSubCodesInfoByCode(response);
+                                var codeRelationList = relationRes.Result.ModelList[0].CodeRelationList;
+                                var formatRelationList = codeRelationList.Where(x => x.CodePackLevel == "1").ToList();
+                                itemDict.Add("sub_code", formatRelationList);
+                            }
+                            else if (relationRes.Result.ResponseSuccess == false)
+                            {
+                                string msg = AddOutBill(item.Code);
+                                if (msg == "调用成功")
+                                {
+                                    return GetSubCodesInfoByCode(response);
+                                }
                             }
                         }
                     }

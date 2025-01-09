@@ -64,14 +64,11 @@ namespace ZR.Service.Business
         public InWarehousing AddInWarehousingWithCondition(InWarehousing parm)
         {
             var inWarehousing = Queryable().Where(x => x.DrugCode == parm.DrugCode && x.BatchNumber == parm.BatchNumber && x.ReceiptId == parm.ReceiptId).First();
-            //不为空，说明已有该药品，则将药品数量加1
-            //if(inWarehousing != null)
-            //{
-            //    parm = inWarehousing;
-            //    parm.InventoryQuantity += 1;
-            //    Update(parm, false);
-            //    return parm;
-            //}
+            //不为空 则直接返回改入库信息，在该入库信息基础上追加溯源码
+            if (inWarehousing != null)
+            {
+                return inWarehousing;
+            }
             return Insertable(parm).ExecuteReturnEntity();
         }
 
@@ -128,6 +125,12 @@ namespace ZR.Service.Business
                 .Where(x => x.ReceiptId == Id).ToList();
                  return response;
         }
+
+        public int UpdateManufacture(InWarehousingDto param)
+        {
+            return Context.Updateable<InWarehousing>().SetColumns(it => it.ManufacturerId == param.ManufacturerId).Where(it => it.Id == param.Id).ExecuteCommand();
+        }
+
 
     }
 }

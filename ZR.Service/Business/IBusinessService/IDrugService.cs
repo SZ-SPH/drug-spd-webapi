@@ -24,5 +24,6 @@ namespace ZR.Service.Business.IBusinessService
         (string, object, object) ImportDrug(List<Drug> list);
 
         PagedInfo<DrugDto> ExportList(DrugQueryDto parm);
+        int TopSevenBind(InWarehousingDto param);
     }
 }

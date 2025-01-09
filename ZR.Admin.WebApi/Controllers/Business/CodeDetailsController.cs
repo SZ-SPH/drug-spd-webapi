@@ -38,7 +38,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
     /// </summary>
     /// <param name="parm"></param>
     /// <returns></returns>
-    [HttpGet("list")]
+        [HttpGet("list")]
         [ActionPermissionFilter(Permission = "codedetails:list")]
         public IActionResult QueryCodeDetails([FromQuery] CodeDetailsQueryDto parm)
         {
@@ -102,21 +102,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
             return SUCCESS(info);
         }
 
-        /// <summary>
-        /// 添加码信息
-        /// </summary>
-        /// <returns></returns>
-        //[HttpPost]
-        //[ActionPermissionFilter(Permission = "codedetails:add")]
-        //[Log(Title = "码信息", BusinessType = BusinessType.INSERT)]
-        //public IActionResult AddCodeDetails([FromBody] CodeDetailsDto parm)
-        //{
-        //    var modal = parm.Adapt<CodeDetails>().ToCreate(HttpContext);
-
-        //    var response = _CodeDetailsService.AddCodeDetails(modal);
-
-        //    return SUCCESS(response);
-        //}
         /// <summary>
         /// 添加码信息   
         /// </summary>
