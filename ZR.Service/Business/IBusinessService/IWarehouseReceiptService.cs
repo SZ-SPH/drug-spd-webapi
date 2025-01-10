@@ -24,5 +24,7 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<WarehouseReceiptDto> ExportList(WarehouseReceiptQueryDto parm);
         List<WarehouseReceipt> GetCode();
 
+        int ReturnDrug(IsBoolInware code);
+
     }
 }

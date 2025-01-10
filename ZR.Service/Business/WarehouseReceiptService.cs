@@ -38,7 +38,28 @@ namespace ZR.Service.Business
             return response;
         }
 
-   
+        public int ReturnDrug(IsBoolInware code)
+        {
+            int sum = 0;
+              Context.Updateable<DeliveryOrder>().SetColumns(it => new DeliveryOrder()
+              {
+               States= "被退回",
+               Remarks=it.Remarks+"|退回原因：价格不对"
+              }).Where(it => it.BillCode == code.deptName).ExecuteCommand();
+
+            var war= Context.Queryable<WarehouseReceipt>().Where(i => i.ReceiptCode == code.RepeiceCode).ToList()[0];
+            var inw = Context.Queryable<InWarehousing>().Where(i => i.ReceiptId == war.ReceiptId).ToList();
+            foreach (var item in inw)
+            {
+               Context.Deleteable<CodeDetails>().Where(i => i.Receiptid == war.ReceiptId&&i.InWarehouseId==item.Id );
+            }
+            Context.Deleteable<InWarehousing>().Where(it => it.ReceiptId == war.ReceiptId).ExecuteCommand();
+            sum += Context.Deleteable<WarehouseReceipt>().Where(it => it.ReceiptCode == code.RepeiceCode).ExecuteCommand();
+
+            return sum;
+      
+
+}
         public List<WarehouseReceipt> GetCode()
         {
             string currentDate = DateTime.Now.ToString("yyyyMMdd");

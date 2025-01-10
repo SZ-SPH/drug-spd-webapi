@@ -43,10 +43,11 @@ namespace ZR.Admin.WebApi.Controllers.Business
         private readonly IDrugService _IDrugService;
         private readonly ISupplierService _SupplierService;
         private readonly IManufacturerService _ManufacturerService;
-
+        private readonly IDeliveryOrderService _DeliveryOrderService;
 
         public WarehouseReceiptController(IWarehouseReceiptService WarehouseReceiptService
             ,IInWarehousingService InWarehousingService,ICodeDetailsService CodeDetailsService,IDrugService drugService,ISupplierService SupplierService,IManufacturerService ManufacturerService
+            ,IDeliveryOrderService DeliveryOrderService
             )
         {
             _WarehouseReceiptService = WarehouseReceiptService;
@@ -55,8 +56,24 @@ namespace ZR.Admin.WebApi.Controllers.Business
             _IDrugService = drugService;
             _SupplierService = SupplierService;
             _ManufacturerService = ManufacturerService;
+            _DeliveryOrderService = DeliveryOrderService;
 
         }
+
+        [HttpGet("returnDep")]
+
+        public IActionResult returnSup([FromQuery] IsBoolInware isBoolInware) {
+
+            //获取到入库单 和  送货单 将送货单 那条修改  同时 将 该条删除
+            var delive = _WarehouseReceiptService.ReturnDrug(isBoolInware);
+            
+            return SUCCESS(delive>0?"true":"false");
+        
+        }
+
+
+
+
 
         /// <summary>
         /// 查询入库单列表
@@ -134,12 +151,14 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     if (drugs.HisPrice!=res.Price)
                     {
                         isBoolInware.DrugName = drugs.DrugName;
+                        isBoolInware.deptName = refs.Decode;
                         isBoolInware.DrugCode =res.DrugCode;
                         isBoolInware.Price =res.Price;
                         isBoolInware.HisPrice =drugs.HisPrice;
                         isBoolInware.RepeiceCode =refs.ReceiptCode;
                         isBoolInware.maunName = res.ManufacturerId;
                         isBoolInware.supName = sup.SupplierName;
+                        isBoolInware.InventoryQuantity = res.Mixqty;
                         list.Add(isBoolInware);
                     }
                   }
@@ -183,7 +202,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     var medItem = new MedItem
                     {
                         Drug_Id = drugs.HisID,
-                        Qty = item.InventoryQuantity.ToString(),
+                        Qty = item.Mixqty.ToString(),
                         Batch_No = item.BatchNumber,
                         Indate = item.Exprie,
                         Prod_Date = item.DateOfManufacture?.ToString(),
