@@ -170,7 +170,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [ActionPermissionFilter(Permission = "supplycontract:import")]
         public IActionResult importData([FromForm(Name = "file")] IFormFile formFile)
         {
-            List<SupladdDto> list = new();
+            List<SYSupladdDto> list = new();
             List<SupplyContractDto> listCon = new();
             List<SupplyContractDrugDto> listDrug = new();
 
@@ -180,7 +180,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             //LoginUser info = Framework.JwtUtil.GetLoginUser(context.HttpContext);
             using (var stream = formFile.OpenReadStream())
             {
-                list = stream.Query<SupladdDto>(startCell: "A1").ToList();
+                list = stream.Query<SYSupladdDto>(startCell: "A1").ToList();
             }
         
             //读写出数据 将数据进行分割 第一条先查询是存在当前合同供应商 不存在则进行增加

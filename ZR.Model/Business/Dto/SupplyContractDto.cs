@@ -82,4 +82,23 @@ namespace ZR.Model.Business.Dto
         public string DrugCode { get; set; }
 
     }
+
+    public class SYSupladdDto
+    {
+
+        [ExcelColumn(Name = "供应商名称")]
+        [ExcelColumnName("供应商名称")]
+        public string SupplierName { get; set; }
+
+        [ExcelColumn(Name = "药品编码")]
+        [ExcelColumnName("药品编码")]
+        public string DrugCode { get; set; }
+
+        // 构造函数，初始化 SupplierName 属性
+        public SYSupladdDto()
+        {
+            SupplierName = "上药控股佛山有限公司";
+        }
+    }
+
 }

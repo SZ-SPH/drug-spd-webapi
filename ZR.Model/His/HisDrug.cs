@@ -13,10 +13,11 @@
         }
 
         public string drugs_code { get; set; }
+        public string ZCZH { get; set; }
 
 
         public string drugs_name { get; set; }
-
+        
 
         public string drugs_specs { get; set; }
 

@@ -46,7 +46,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// <returns></returns>
         [HttpGet("GYSlist")]
         [ActionPermissionFilter(Permission = "drug:list")]
-        public IActionResult GYSQueryDrug([FromQuery] GYSDrugQueryDto parm)
+        public IActionResult GYSQueryDrug([FromQuery] DrugQueryDto parm)
         {
             var response = _DrugService.GYSGetList(parm);
             return SUCCESS(response);

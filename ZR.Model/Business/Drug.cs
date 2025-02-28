@@ -12,7 +12,11 @@ namespace ZR.Model.Business
         /// </summary>
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true, ColumnName = "dRUG_ID")]
         public int DrugId { get; set; }
+        [SugarColumn(ColumnName = "zCZH")]
 
+        public string ZCZH { get; set; }
+
+        
         /// <summary>
         /// 药品名称 
         /// </summary>

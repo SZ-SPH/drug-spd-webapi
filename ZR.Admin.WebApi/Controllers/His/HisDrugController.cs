@@ -97,6 +97,8 @@ namespace ZR.Admin.WebApi.Controllers.His
                     matchingDrug.HisPrice = hisDrugItem.PURCH_PRICE != null ? decimal.Parse(hisDrugItem.PURCH_PRICE) : 0;
                     matchingDrug.KfEnable = hisDrugItem.KFYX;
                     matchingDrug.YfEnable = hisDrugItem.YFYX;
+                    matchingDrug.ZCZH = hisDrugItem.ZCZH;
+                    
                     _DrugService.UpdateDrug(matchingDrug);
                 }
                 else
@@ -117,9 +119,10 @@ namespace ZR.Admin.WebApi.Controllers.His
                     HisPrice = hisDrugItem.PURCH_PRICE != null ? decimal.Parse(hisDrugItem.PURCH_PRICE) : 0,
                     KfEnable = hisDrugItem.KFYX,
                     YfEnable = hisDrugItem.YFYX,
-                };
+                        ZCZH = hisDrugItem.ZCZH
+                    };
                 _DrugService.AddDrug(newWarehouse);
-                    // 这里不应该设置 Id
+              
                 }
             }
 

@@ -31,7 +31,7 @@ namespace ZR.Service.Business
 
             return response;
         }
-        public PagedInfo<DrugDto> GYSGetList(GYSDrugQueryDto parm)
+        public PagedInfo<DrugDto> GYSGetList(DrugQueryDto parm)
         {
             var predicate = QueryExp(parm);
             var response = Queryable()
@@ -42,7 +42,10 @@ namespace ZR.Service.Business
                 (string.IsNullOrEmpty(parm.DrugCode) || it.DrugCode == parm.DrugCode) &&
                 (string.IsNullOrEmpty(parm.DrugMnemonicCode) || it.DrugMnemonicCode.Contains(parm.DrugMnemonicCode))) &&
                 (string.IsNullOrEmpty(parm.SupplierName) || s.SupplierName.Contains(parm.SupplierName))
-           )
+           ).Select((it, d, s) => new Drug
+           { 
+    },true).Distinct()
+           //.GroupBy((it)=>it.DrugCode)           
            .ToPage<Drug, DrugDto>(parm);
 
 

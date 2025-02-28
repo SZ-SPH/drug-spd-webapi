@@ -11,7 +11,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
     /// <summary>   
     /// 送货单药品
     /// </summary>
-    [Verify]
+    [AllowAnonymous]
+
     [Route("business/DeliveryOrderDrug")]
     public class DeliveryOrderDrugController : BaseController
     {

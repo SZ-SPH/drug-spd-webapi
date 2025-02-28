@@ -158,7 +158,29 @@ namespace ZR.Admin.WebApi.Controllers
             var f = (List<Dictionary<string, object>>)GetSubCodesInfoByCode(response);
             return SUCCESS(f[0].GetValueOrDefault("sub_code"));
         }
-
+        [HttpGet]
+        public IActionResult AllMIXcodes(string codes)
+        {
+            string[] numbers = codes.Split(',');
+            List<string> code = new List<string>();
+            // 将分隔后的每个字符串添加到列表中
+            foreach (string number in numbers)
+            {
+                code.Add(number);
+            }
+            //"ent_id": "00000000000017495183",
+            var request = new AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest();
+            request.RefEntId = (string?)Getentinfo("佛山市南海区第五人民医院(佛山市南海区大沥医院)");
+            Ref_id = request.RefEntId;
+            //81797370314342290453
+            request.Codes = new List<string>();
+            request.Codes = code;
+            var response = apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request);
+            var resultList = new List<Vcodes>();
+            //var f = MChange(response, resultList);
+            var f = (List<Dictionary<string, object>>)GetSubCodesInfoByCodes(response);
+            return SUCCESS(f);
+        }
         [HttpGet]
         public IActionResult CodeInOneWay(string codes)
         {
@@ -229,12 +251,82 @@ namespace ZR.Admin.WebApi.Controllers
                             }
                         }
                     }
+
                     list.Add(itemDict);
                 }
             }
             return list;
         }
 
+
+        public object GetSubCodesInfoByCodes(AlibabaAlihealthDrugtraceTopYljgQueryCodedetailResponse response)
+        {
+            var isSuccess = response.Result.ResponseSuccess;
+            List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
+            if (isSuccess.GetValueOrDefault())
+            {
+                var models = response.Result.Models;
+                foreach (var item in models)
+                {
+                    Dictionary<string, object> itemDict = new Dictionary<string, object>();
+                    var currentProductInfo = item.CodeProduceInfoDTO.ProduceInfoList[0];
+                    //溯源码（父玛）
+                    itemDict.Add("code", item.Code);
+                    //数量
+                    itemDict.Add("pkg_amount", currentProductInfo.PkgAmount);
+                    //批号
+                    itemDict.Add("batch_no", currentProductInfo.BatchNo);
+                    //有效到期
+                    itemDict.Add("exipre_date", DateTime.TryParse(currentProductInfo.ExpireDate, out DateTime expireDate) ? expireDate.ToString("yyyy-MM-dd") : "");
+                    //生产日期
+                    itemDict.Add("produce_date", DateTime.TryParse(currentProductInfo.ProduceDateStr, out DateTime produceDateStr) ? produceDateStr.ToString("yyyy-MM-dd") : "");
+                    //有效到
+                    itemDict.Add("expire", DateTime.TryParse(item.DrugEntBaseDTO.Exprie, out DateTime expire) ? expire.ToString("yyyy-MM-dd") : "");
+                    itemDict.Add("packageLevel", item.PackageLevel);
+                    
+                    //中码或者大码
+
+                    if (item.PackageLevel.Equals("2") || item.PackageLevel.Equals("3"))
+                    {
+                        AlibabaAlihealthDrugtraceTopYljgQueryRelationResponse relationRes = relation(item.Code);
+
+                        if (relationRes != null)
+                        {
+                            if (true == relationRes.Result.ResponseSuccess)
+                            {
+                                var codeRelationList = relationRes.Result.ModelList[0].CodeRelationList;
+                                //var formatRelationList = codeRelationList.Where(x => x.CodePackLevel == "1").ToList();
+                                codeRelationList.ToList().ForEach(i => i.CodeLevel =i.CodePackLevel+ 1);
+
+                                itemDict.Add("sub_code", codeRelationList);
+                            }
+                            else if (relationRes.Result.ResponseSuccess == false)
+                            {
+                                string msg = AddOutBill(item.Code);
+                                if (msg == "调用成功")
+                                {
+                                    return GetSubCodesInfoByCodes(response);
+                                }
+                            }
+                        }
+                    }
+                    //if(item.PackageLevel.Equals("1"))
+                    //{
+                    //    AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo ass=new AlibabaAlihealthDrugtraceTopYljgQueryRelationCodeInfo();
+                    //    ass.Code=item.Code;
+                    //    ass.CodeLevel = item.PackageLevel;
+                    //    ass.CodePackLevel = item.PackageLevel ;
+                    //    ass.ParentCode = "";
+                    //    ass.Status = item.CodeStatusTypeDTO.CodeStatus;
+                    //    itemDict.Add("sub_code", ass);
+                    //}
+                    list.Add(itemDict);
+
+                }
+
+            }
+            return list;
+        }
 
         public object MChange(AlibabaAlihealthDrugtraceTopYljgQueryCodedetailResponse response, List<Vcodes> resultList)
         {
@@ -256,28 +348,13 @@ namespace ZR.Admin.WebApi.Controllers
                         {
                             for (int k = 0; k < res.Result.ModelList[j].CodeRelationList.Count; k++)
                             {
-                                //if (res.Result.ModelList[j].CodeRelationList[k].Code== ModelState[0].Code)
-                                //{
-                                //    return resultList;
-                                //}
-                                //if (res.Result.ModelList[j].CodeRelationList[k].CodePackLevel == "2")
-                                //{
-                                //    //list.Add(res.Result.ModelList[j].CodeRelationList[k].Code);
-                                //    var request = new AlibabaAlihealthDrugtraceTopYljgQueryCodedetailRequest();
-                                //    request.RefEntId = Ref_id;
-                                //    request.Codes = new List<string> { res.Result.ModelList[j].CodeRelationList[k].Code };
-                                //    return MChange(apiPackage.AlibabaAlihealthDrugtraceTopYljgQueryCodedetail(request), resultList);
-                                //}
-                                //else if (res.Result.ModelList[j].CodeRelationList[k].CodePackLevel == "1")
-                                //{
+
                                     Vcodes vcodes = new Vcodes();
                                     vcodes.Code = res.Result.ModelList[j].CodeRelationList[k].Code;
                                     vcodes.PackageLevel = res.Result.ModelList[j].CodeRelationList[k].CodePackLevel;
                                     vcodes.ParentCode= res.Result.ModelList[j].CodeRelationList[k].ParentCode;
                                     vcodes.CodeLevel = res.Result.ModelList[j].CodeRelationList[k].CodePackLevel + 1;
-
-                                resultList.Add(vcodes);
-                                //}
+                                resultList.Add(vcodes);                             
                             }
                         }
                     }

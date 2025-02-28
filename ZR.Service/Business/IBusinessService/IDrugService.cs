@@ -9,7 +9,7 @@ namespace ZR.Service.Business.IBusinessService
     public interface IDrugService : IBaseService<Drug>
     {
         PagedInfo<DrugDto> GetList(DrugQueryDto parm);
-        PagedInfo<DrugDto> GYSGetList(GYSDrugQueryDto parm);
+        PagedInfo<DrugDto> GYSGetList(DrugQueryDto parm);
 
         Drug GetListWithCondition(InWarehousingPdaDto parm);
 

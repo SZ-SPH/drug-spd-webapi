@@ -8,6 +8,8 @@ namespace ZR.Model.Business.Dto
         public string DrugName { get; set; }
         public string DrugCode { get; set; }
         public string DrugMnemonicCode { get; set; }
+        public string SupplierName { get; set; }
+
     }
     public class GYSDrugQueryDto : PagerInfo
     {
@@ -25,7 +27,9 @@ namespace ZR.Model.Business.Dto
         [ExcelColumn(Name = "id")]
         [ExcelColumnName("id")]
         public int DrugId { get; set; }
+        public string ZCZH { get; set; }
 
+        
         [ExcelColumn(Name = "药品名称")]
         [ExcelColumnName("药品名称")]
         public string DrugName { get; set; }

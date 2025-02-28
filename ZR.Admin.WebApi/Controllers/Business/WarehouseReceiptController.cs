@@ -202,7 +202,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     var medItem = new MedItem
                     {
                         Drug_Id = drugs.HisID,
-                        Qty = item.Mixqty.ToString(),
+                        Qty = item.InventoryQuantity.ToString(),
                         Batch_No = item.BatchNumber,
                         Indate = item.Exprie,
                         Prod_Date = item.DateOfManufacture?.ToString(),
